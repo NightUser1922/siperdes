@@ -2,16 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+// Kita gunakan Authenticatable supaya Laravel tahu ini tabel untuk login
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class UserTable extends Model
+class UserTable extends Authenticatable
 {
-    // Mengarahkan model ke nama tabel yang benar di database Laragon
-    protected $table = 'tb_user';
+    use Notifiable;
 
-    // Mendefinisikan Primary Key sesuai rancangan skripsi
+    protected $table = 'tb_user';
     protected $primaryKey = 'id_user';
 
-    // Daftar kolom yang boleh diisi secara massal (keamanan)
-    protected $fillable = ['username', 'password', 'level', 'nama_lengkap'];
+    protected $fillable = [
+        'username', 
+        'password', 
+        'level', 
+        'nama_lengkap'
+    ];
+
+    // Menyembunyikan password agar tidak tampil di log atau API
+    protected $hidden = [
+        'password',
+    ];
 }
