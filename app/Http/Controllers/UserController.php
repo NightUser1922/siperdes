@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+// Kita tetap butuh Model UserTable jika nanti ingin mencatat log ke database
 use App\Models\UserTable;
 
 class UserController extends Controller
 {
-    // Menampilkan halaman login
-    public function index()
+    // Menampilkan halaman login dengan deteksi IP
+    public function index(Request $request)
     {
-        return view('login');
+        // Menangkap IP Address pengakses
+        $ipAddress = $request->ip();
+        
+        // Mengirim data IP ke view 'login'
+        return view('login', compact('ipAddress'));
     }
 
     // Proses autentikasi user
@@ -23,10 +27,13 @@ class UserController extends Controller
             'password' => 'required',
         ]);
 
+        // Deteksi IP saat tombol login ditekan
+        $ip = $request->ip();
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             
-            // Cek level user untuk redirect ke dashboard yang tepat
+            // Logika: User berhasil masuk, IP dicatat (bisa dikembangkan ke tabel log)
             if (Auth::user()->level == 'Admin') {
                 return redirect()->intended('/admin/dashboard');
             } else {
@@ -34,15 +41,15 @@ class UserController extends Controller
             }
         }
 
-        return back()->with('loginError', 'Username atau Password salah!');
+        // Jika gagal, tampilkan pesan error beserta IP-nya (sebagai peringatan)
+        return back()->with('loginError', "Login gagal! Akses Anda dari IP: $ip telah terekam sistem.");
     }
 
-    // Proses logout
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect('/');
     }
 }
