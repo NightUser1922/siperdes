@@ -15,6 +15,7 @@
             position: fixed;
             width: 250px;
             transition: all 0.3s;
+            z-index: 1000;
         }
         .sidebar a {
             color: #c8e6c9;
@@ -51,9 +52,21 @@
         <h4 class="text-center py-4 fw-bold mb-0 border-bottom border-success">SIPERDES</h4>
         
         <small class="text-uppercase px-3 mt-4 d-block text-success fw-bold">Menu Utama</small>
-        <a href="#" class="active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-        <a href="#"><i class="bi bi-inbox me-2"></i> Surat Masuk</a>
-        <a href="#"><i class="bi bi-send me-2"></i> Surat Keluar</a>
+        
+        {{-- LINK DASHBOARD --}}
+        <a href="{{ url('/admin/dashboard') }}" class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">
+            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+        </a>
+        
+        {{-- LINK SURAT MASUK --}}
+        <a href="{{ url('/surat-masuk') }}" class="{{ Request::is('surat-masuk*') ? 'active' : '' }}">
+            <i class="bi bi-inbox me-2"></i> Surat Masuk
+        </a>
+        
+        {{-- LINK SURAT KELUAR --}}
+        <a href="{{ url('/surat-keluar') }}" class="{{ Request::is('surat-keluar*') ? 'active' : '' }}">
+            <i class="bi bi-send me-2"></i> Surat Keluar
+        </a>
 
         <small class="text-uppercase px-3 mt-4 d-block text-success fw-bold">Ekspansi (Fitur Baru)</small>
         <a href="#"><i class="bi bi-folder2-open me-2"></i> Arsip Dokumen</a>
