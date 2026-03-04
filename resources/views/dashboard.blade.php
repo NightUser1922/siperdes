@@ -10,7 +10,8 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted mb-2">Total Surat Masuk</h6>
-                        <h3 class="fw-bold text-success mb-0">124</h3>
+                        {{-- PERBAIKAN: Gunakan variabel dari database --}}
+                        <h3 class="fw-bold text-success mb-0">{{ $totalMasuk }}</h3>
                     </div>
                     <div class="fs-1 text-success opacity-50">
                         <i class="bi bi-inbox"></i>
@@ -26,7 +27,8 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted mb-2">Total Surat Keluar</h6>
-                        <h3 class="fw-bold text-primary mb-0">89</h3>
+                        {{-- PERBAIKAN: Gunakan variabel dari database --}}
+                        <h3 class="fw-bold text-primary mb-0">{{ $totalKeluar }}</h3>
                     </div>
                     <div class="fs-1 text-primary opacity-50">
                         <i class="bi bi-send"></i>
@@ -41,8 +43,9 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted mb-2">Arsip Dokumen</h6>
-                        <h3 class="fw-bold text-warning mb-0">45</h3>
+                        <h6 class="text-muted mb-2">Total Arsip Dokumen</h6>
+                        {{-- PERBAIKAN: Gunakan variabel dari database --}}
+                        <h3 class="fw-bold text-warning mb-0">{{ $totalArsip }}</h3>
                     </div>
                     <div class="fs-1 text-warning opacity-50">
                         <i class="bi bi-folder2-open"></i>
