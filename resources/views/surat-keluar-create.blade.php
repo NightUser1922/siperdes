@@ -12,7 +12,6 @@
                 </div>
                 <div class="card-body p-4">
                     
-                    {{-- Menampilkan pesan error validasi jika ada --}}
                     @if ($errors->any())
                         <div class="alert alert-danger pb-0">
                             <ul>
@@ -23,7 +22,8 @@
                         </div>
                     @endif
 
-                    <form action="{{ url('/surat-keluar') }}" method="POST" enctype="multipart/form-data">
+                    {{-- PERBAIKAN: Arahkan action ke rute store --}}
+                    <form action="{{ url('/surat-keluar/store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
                         <div class="mb-3">

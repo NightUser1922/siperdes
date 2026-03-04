@@ -57,4 +57,68 @@ class SuratKeluarController extends Controller
 
         return redirect('/surat-keluar')->with('success', 'Surat Keluar Berhasil Diarsipkan!');
     }
+
+    // ----------------------------------------------------
+    // FITUR BARU: EDIT, UPDATE, & DELETE
+    // ----------------------------------------------------
+
+    // Menampilkan Form Edit
+    public function edit($id)
+    {
+        $suratKeluar = SuratKeluar::where('id_keluar', $id)->firstOrFail();
+        return view('surat-keluar-edit', compact('suratKeluar'));
+    }
+
+    // Proses Update Data
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'tgl_surat' => 'required|date',
+            'tujuan'    => 'required',
+            'perihal'   => 'required',
+            'file_scan' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+        ]);
+
+        $suratKeluar = SuratKeluar::where('id_keluar', $id)->firstOrFail();
+        
+        $dataUpdate = [
+            'tgl_surat' => $request->tgl_surat,
+            'tujuan'    => $request->tujuan,
+            'perihal'   => $request->perihal,
+        ];
+
+        // Cek jika ada file baru yang diupload
+        if ($request->hasFile('file_scan')) {
+            // Hapus file lama jika ada
+            if ($suratKeluar->file_scan && file_exists(public_path('uploads/surat_keluar/' . $suratKeluar->file_scan))) {
+                unlink(public_path('uploads/surat_keluar/' . $suratKeluar->file_scan));
+            }
+
+            // Simpan file baru
+            $file = $request->file('file_scan');
+            $namaFile = 'SK_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/surat_keluar'), $namaFile);
+            
+            $dataUpdate['file_scan'] = $namaFile;
+        }
+
+        $suratKeluar->update($dataUpdate);
+
+        return redirect('/surat-keluar')->with('success', 'Data Surat Keluar berhasil diperbarui!');
+    }
+
+    // Proses Hapus Data
+    public function destroy($id)
+    {
+        $suratKeluar = SuratKeluar::where('id_keluar', $id)->firstOrFail();
+
+        // Hapus file fisik jika ada
+        if ($suratKeluar->file_scan && file_exists(public_path('uploads/surat_keluar/' . $suratKeluar->file_scan))) {
+            unlink(public_path('uploads/surat_keluar/' . $suratKeluar->file_scan));
+        }
+
+        $suratKeluar->delete();
+
+        return redirect('/surat-keluar')->with('success', 'Arsip Surat Keluar berhasil dihapus!');
+    }
 }

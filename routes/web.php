@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuratMasukController;
-use App\Http\Controllers\SuratKeluarController; // 1. Tambahkan Import Ini
+use App\Http\Controllers\SuratKeluarController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB; 
 
@@ -10,10 +10,8 @@ Route::get('/', [UserController::class, 'index'])->name('login');
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout']);
 
-// Group Middleware untuk Keamanan
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     
-    // Route Dashboard (Admin & Kades menggunakan logic yang sama)
     Route::get('/admin/dashboard', function () {
         return dashboardData();
     });
@@ -27,13 +25,17 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/surat-masuk/create', [SuratMasukController::class, 'create']);
     Route::post('/surat-masuk/store', [SuratMasukController::class, 'store']);
 
-    // Route Surat Keluar (2. Tambahkan Baris Ini)
+    // Route Surat Keluar
     Route::get('/surat-keluar', [SuratKeluarController::class, 'index']);
     Route::get('/surat-keluar/create', [SuratKeluarController::class, 'create']);
     Route::post('/surat-keluar/store', [SuratKeluarController::class, 'store']);
+    
+    // RUTE BARU: Edit, Update, dan Delete Surat Keluar
+    Route::get('/surat-keluar/edit/{id}', [SuratKeluarController::class, 'edit']);
+    Route::put('/surat-keluar/update/{id}', [SuratKeluarController::class, 'update']);
+    Route::delete('/surat-keluar/delete/{id}', [SuratKeluarController::class, 'destroy']);
 });
 
-// Helper function agar tidak menulis ulang kode dashboard (opsional tapi lebih rapi)
 function dashboardData() {
     try {
         $totalMasuk = DB::table('tb_surat_masuk')->count();
