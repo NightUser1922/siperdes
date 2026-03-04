@@ -11,7 +11,7 @@ class SuratKeluarController extends Controller
     // Menampilkan Tabel Surat Keluar
     public function index()
     {
-        $suratKeluar = SuratKeluar::orderBy('id_keluar', 'desc')->get();
+        $suratKeluar = SuratKeluar::orderBy('id_surat_keluar', 'desc')->get();
         return view('surat-keluar', compact('suratKeluar'));
     }
 
@@ -20,7 +20,7 @@ class SuratKeluarController extends Controller
     {
         // Hitung total surat keluar tahun ini untuk nomor urut
         $tahunSekarang = date('Y');
-        $jumlahSurat = SuratKeluar::whereYear('tgl_surat', $tahunSekarang)->count();
+        $jumlahSurat = SuratKeluar::whereYear('tanggal_keluar', $tahunSekarang)->count();
         
         // Format: 001/SK/AMD/2026
         $noOtomatis = sprintf("%03d", $jumlahSurat + 1) . "/SK/AMD/" . $tahunSekarang;
@@ -33,15 +33,15 @@ class SuratKeluarController extends Controller
     {
         $request->validate([
             'no_surat'  => 'required',
-            'tgl_surat' => 'required|date',
-            'tujuan'    => 'required',
+            'tanggal_keluar' => 'required|date',
+            'tujuan_surat'    => 'required',
             'perihal'   => 'required',
-            'file_scan' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'file_surat' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         $namaFile = null;
-        if ($request->hasFile('file_scan')) {
-            $file = $request->file('file_scan');
+        if ($request->hasFile('file_surat')) {
+            $file = $request->file('file_surat');
             // Simpan dengan nama unik di folder public/uploads/surat_keluar
             $namaFile = 'SK_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/surat_keluar'), $namaFile);
@@ -49,10 +49,10 @@ class SuratKeluarController extends Controller
 
         SuratKeluar::create([
             'no_surat'  => $request->no_surat,
-            'tgl_surat' => $request->tgl_surat,
-            'tujuan'    => $request->tujuan,
+            'tanggal_keluar' => $request->tanggal_keluar,
+            'tujuan_surat'    => $request->tujuan_surat,
             'perihal'   => $request->perihal,
-            'file_scan' => $namaFile,
+            'file_surat' => $namaFile,
         ]);
 
         return redirect('/surat-keluar')->with('success', 'Surat Keluar Berhasil Diarsipkan!');
@@ -65,7 +65,7 @@ class SuratKeluarController extends Controller
     // Menampilkan Form Edit
     public function edit($id)
     {
-        $suratKeluar = SuratKeluar::where('id_keluar', $id)->firstOrFail();
+        $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
         return view('surat-keluar-edit', compact('suratKeluar'));
     }
 
@@ -73,33 +73,33 @@ class SuratKeluarController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'tgl_surat' => 'required|date',
-            'tujuan'    => 'required',
+            'tanggal_keluar' => 'required|date',
+            'tujuan_surat'    => 'required',
             'perihal'   => 'required',
-            'file_scan' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'file_surat' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
-        $suratKeluar = SuratKeluar::where('id_keluar', $id)->firstOrFail();
+        $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
         
         $dataUpdate = [
-            'tgl_surat' => $request->tgl_surat,
-            'tujuan'    => $request->tujuan,
+            'tanggal_keluar' => $request->tanggal_keluar,
+            'tujuan_surat'    => $request->tujuan_surat,
             'perihal'   => $request->perihal,
         ];
 
         // Cek jika ada file baru yang diupload
-        if ($request->hasFile('file_scan')) {
+        if ($request->hasFile('file_surat')) {
             // Hapus file lama jika ada
-            if ($suratKeluar->file_scan && file_exists(public_path('uploads/surat_keluar/' . $suratKeluar->file_scan))) {
-                unlink(public_path('uploads/surat_keluar/' . $suratKeluar->file_scan));
+            if ($suratKeluar->file_surat && file_exists(public_path('uploads/surat_keluar/' . $suratKeluar->file_surat))) {
+                unlink(public_path('uploads/surat_keluar/' . $suratKeluar->file_surat));
             }
 
             // Simpan file baru
-            $file = $request->file('file_scan');
+            $file = $request->file('file_surat');
             $namaFile = 'SK_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/surat_keluar'), $namaFile);
             
-            $dataUpdate['file_scan'] = $namaFile;
+            $dataUpdate['file_surat'] = $namaFile;
         }
 
         $suratKeluar->update($dataUpdate);
@@ -110,11 +110,11 @@ class SuratKeluarController extends Controller
     // Proses Hapus Data
     public function destroy($id)
     {
-        $suratKeluar = SuratKeluar::where('id_keluar', $id)->firstOrFail();
+        $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
 
         // Hapus file fisik jika ada
-        if ($suratKeluar->file_scan && file_exists(public_path('uploads/surat_keluar/' . $suratKeluar->file_scan))) {
-            unlink(public_path('uploads/surat_keluar/' . $suratKeluar->file_scan));
+        if ($suratKeluar->file_surat && file_exists(public_path('uploads/surat_keluar/' . $suratKeluar->file_surat))) {
+            unlink(public_path('uploads/surat_keluar/' . $suratKeluar->file_surat));
         }
 
         $suratKeluar->delete();

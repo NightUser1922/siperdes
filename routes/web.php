@@ -20,17 +20,25 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         return dashboardData();
     });
 
-    // Route Surat Masuk
+    // ==========================================
+    // ROUTE SURAT MASUK
+    // ==========================================
     Route::get('/surat-masuk', [SuratMasukController::class, 'index']);
     Route::get('/surat-masuk/create', [SuratMasukController::class, 'create']);
     Route::post('/surat-masuk/store', [SuratMasukController::class, 'store']);
+    
+    // RUTE BARU: Edit, Update, dan Delete Surat Masuk
+    Route::get('/surat-masuk/edit/{id}', [SuratMasukController::class, 'edit']);
+    Route::put('/surat-masuk/update/{id}', [SuratMasukController::class, 'update']);
+    Route::delete('/surat-masuk/delete/{id}', [SuratMasukController::class, 'destroy']);
 
-    // Route Surat Keluar
+    // ==========================================
+    // ROUTE SURAT KELUAR
+    // ==========================================
     Route::get('/surat-keluar', [SuratKeluarController::class, 'index']);
     Route::get('/surat-keluar/create', [SuratKeluarController::class, 'create']);
     Route::post('/surat-keluar/store', [SuratKeluarController::class, 'store']);
     
-    // RUTE BARU: Edit, Update, dan Delete Surat Keluar
     Route::get('/surat-keluar/edit/{id}', [SuratKeluarController::class, 'edit']);
     Route::put('/surat-keluar/update/{id}', [SuratKeluarController::class, 'update']);
     Route::delete('/surat-keluar/delete/{id}', [SuratKeluarController::class, 'destroy']);

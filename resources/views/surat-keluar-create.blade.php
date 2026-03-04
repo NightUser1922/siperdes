@@ -22,7 +22,6 @@
                         </div>
                     @endif
 
-                    {{-- PERBAIKAN: Arahkan action ke rute store --}}
                     <form action="{{ url('/surat-keluar/store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
@@ -33,13 +32,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="tgl_surat" class="form-label fw-semibold">Tanggal Surat <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="tgl_surat" name="tgl_surat" value="{{ old('tgl_surat', date('Y-m-d')) }}" required>
+                            <label for="tanggal_keluar" class="form-label fw-semibold">Tanggal Surat <span class="text-danger">*</span></label>
+                            {{-- PERBAIKAN: name dan old() disesuaikan menjadi tanggal_keluar --}}
+                            <input type="date" class="form-control" id="tanggal_keluar" name="tanggal_keluar" value="{{ old('tanggal_keluar', date('Y-m-d')) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tujuan" class="form-label fw-semibold">Tujuan / Penerima <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="tujuan" name="tujuan" value="{{ old('tujuan') }}" placeholder="Masukkan nama instansi atau penerima tujuan" required>
+                            <label for="tujuan_surat" class="form-label fw-semibold">Tujuan / Penerima <span class="text-danger">*</span></label>
+                            {{-- PERBAIKAN: name dan old() disesuaikan menjadi tujuan_surat --}}
+                            <input type="text" class="form-control" id="tujuan_surat" name="tujuan_surat" value="{{ old('tujuan_surat') }}" placeholder="Masukkan nama instansi atau penerima tujuan" required>
                         </div>
 
                         <div class="mb-3">
@@ -48,8 +49,9 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="file_scan" class="form-label fw-semibold">Upload Berkas Scan (Opsional)</label>
-                            <input class="form-control" type="file" id="file_scan" name="file_scan" accept=".pdf,.jpg,.jpeg,.png">
+                            <label for="file_surat" class="form-label fw-semibold">Upload Berkas Scan (Opsional)</label>
+                            {{-- PERBAIKAN: name disesuaikan menjadi file_surat --}}
+                            <input class="form-control" type="file" id="file_surat" name="file_surat" accept=".pdf,.jpg,.jpeg,.png">
                             <small class="text-muted">Format file yang diizinkan: PDF, JPG, PNG. Maksimal 2MB.</small>
                         </div>
 

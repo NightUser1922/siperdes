@@ -22,7 +22,6 @@
                         </div>
                     @endif
 
-                    {{-- PERBAIKAN: Gunakan id_surat_keluar --}}
                     <form action="{{ url('/surat-keluar/update/' . $suratKeluar->id_surat_keluar) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -33,15 +32,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="tgl_surat" class="form-label fw-semibold">Tanggal Surat <span class="text-danger">*</span></label>
-                            {{-- PERBAIKAN: Gunakan tanggal_keluar --}}
-                            <input type="date" class="form-control" id="tgl_surat" name="tgl_surat" value="{{ old('tgl_surat', $suratKeluar->tanggal_keluar) }}" required>
+                            <label for="tanggal_keluar" class="form-label fw-semibold">Tanggal Surat <span class="text-danger">*</span></label>
+                            {{-- PERBAIKAN: name diubah menjadi tanggal_keluar --}}
+                            <input type="date" class="form-control" id="tanggal_keluar" name="tanggal_keluar" value="{{ old('tanggal_keluar', $suratKeluar->tanggal_keluar) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tujuan" class="form-label fw-semibold">Tujuan / Penerima <span class="text-danger">*</span></label>
-                            {{-- PERBAIKAN: Gunakan tujuan_surat --}}
-                            <input type="text" class="form-control" id="tujuan" name="tujuan" value="{{ old('tujuan', $suratKeluar->tujuan_surat) }}" required>
+                            <label for="tujuan_surat" class="form-label fw-semibold">Tujuan / Penerima <span class="text-danger">*</span></label>
+                            {{-- PERBAIKAN: name diubah menjadi tujuan_surat --}}
+                            <input type="text" class="form-control" id="tujuan_surat" name="tujuan_surat" value="{{ old('tujuan_surat', $suratKeluar->tujuan_surat) }}" required>
                         </div>
 
                         <div class="mb-3">
@@ -50,11 +49,11 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="file_scan" class="form-label fw-semibold">Upload Berkas Scan Baru (Opsional)</label>
-                            <input class="form-control" type="file" id="file_scan" name="file_scan" accept=".pdf,.jpg,.jpeg,.png">
+                            <label for="file_surat" class="form-label fw-semibold">Upload Berkas Scan Baru (Opsional)</label>
+                            {{-- PERBAIKAN: name diubah menjadi file_surat --}}
+                            <input class="form-control" type="file" id="file_surat" name="file_surat" accept=".pdf,.jpg,.jpeg,.png">
                             <small class="text-muted">Biarkan kosong jika tidak ingin mengubah file scan yang sudah ada.</small>
                             
-                            {{-- PERBAIKAN: Gunakan file_surat --}}
                             @if($suratKeluar->file_surat)
                                 <div class="mt-2">
                                     <span class="badge bg-info text-dark">

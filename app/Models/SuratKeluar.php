@@ -6,7 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class SuratKeluar extends Model
 {
+    // Menunjuk ke tabel yang benar di database
     protected $table = 'tb_surat_keluar';
-    protected $primaryKey = 'id_keluar';
-    protected $fillable = ['no_surat', 'tgl_surat', 'tujuan', 'perihal', 'file_scan'];
+    
+    // Primary key wajib disesuaikan dengan HeidiSQL
+    protected $primaryKey = 'id_surat_keluar';
+    
+    // Kolom-kolom yang diizinkan untuk diisi (wajib sama persis dengan nama kolom database)
+    protected $fillable = [
+        'no_surat', 
+        'tanggal_keluar', 
+        'tujuan_surat', 
+        'perihal', 
+        'file_surat'
+    ];
 }
