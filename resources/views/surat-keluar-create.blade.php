@@ -27,8 +27,9 @@
                         
                         <div class="mb-3">
                             <label for="no_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
-                            {{-- PERBAIKAN: Hapus 'readonly' dan 'bg-light' agar nomor bisa direvisi --}}
-                            <input type="text" class="form-control" id="no_surat" name="no_surat" value="{{ old('no_surat', $suratKeluar->no_surat) }}" required>
+                            {{-- PERBAIKAN: Gunakan $noOtomatis, bukan $suratKeluar --}}
+                            <input type="text" class="form-control" id="no_surat" name="no_surat" value="{{ old('no_surat', $noOtomatis ?? '') }}" required>
+                            <small class="text-muted">Nomor di atas adalah rekomendasi otomatis. Anda bisa mengubahnya jika diperlukan.</small>
                         </div>
 
                         <div class="mb-3">
@@ -48,10 +49,8 @@
 
                         <div class="mb-4">
                             <label for="file_surat" class="form-label fw-semibold">Upload Berkas Dokumen (Opsional)</label>
-                            {{-- PERBAIKAN: Tambahkan doc, docx, xls, xlsx pada accept --}}
                             <input class="form-control" type="file" id="file_surat" name="file_surat" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
-                            {{-- PERBAIKAN: Teks keterangan disesuaikan --}}
-                            <small class="text-muted">Format file yang diizinkan: PDF, JPG, PNG, DOC/X, XLS/X. Maksimal 5MB.</small>
+                            <small class="text-muted">Format file: PDF, JPG, PNG, DOC/X, XLS/X. Maksimal 5MB.</small>
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
