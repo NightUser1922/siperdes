@@ -27,9 +27,10 @@ class SuratMasukController extends Controller
         $request->validate([
             'no_surat'       => 'required',
             'pengirim'       => 'required',
-            'tanggal_masuk'  => 'required|date', // Sesuaikan dengan name di HTML
+            'tanggal_masuk'  => 'required|date',
             'perihal'        => 'required',
-            'file_surat'     => 'nullable|image|mimes:jpg,png,jpeg,pdf|max:2048',
+            // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
+            'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
         ]);
 
         $namaFile = null;
@@ -67,7 +68,8 @@ class SuratMasukController extends Controller
             'pengirim'       => 'required',
             'tanggal_masuk'  => 'required|date',
             'perihal'        => 'required',
-            'file_surat'     => 'nullable|image|mimes:jpg,png,jpeg,pdf|max:2048',
+            // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
+            'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
         ]);
 
         $suratMasuk = SuratMasuk::where('id_surat_masuk', $id)->firstOrFail();

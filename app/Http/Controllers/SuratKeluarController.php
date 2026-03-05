@@ -32,11 +32,12 @@ class SuratKeluarController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_surat'  => 'required',
+            'no_surat'       => 'required',
             'tanggal_keluar' => 'required|date',
-            'tujuan_surat'    => 'required',
-            'perihal'   => 'required',
-            'file_surat' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'tujuan_surat'   => 'required',
+            'perihal'        => 'required',
+            // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
+            'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
         ]);
 
         $namaFile = null;
@@ -48,11 +49,11 @@ class SuratKeluarController extends Controller
         }
 
         SuratKeluar::create([
-            'no_surat'  => $request->no_surat,
+            'no_surat'       => $request->no_surat,
             'tanggal_keluar' => $request->tanggal_keluar,
-            'tujuan_surat'    => $request->tujuan_surat,
-            'perihal'   => $request->perihal,
-            'file_surat' => $namaFile,
+            'tujuan_surat'   => $request->tujuan_surat,
+            'perihal'        => $request->perihal,
+            'file_surat'     => $namaFile,
         ]);
 
         return redirect('/surat-keluar')->with('success', 'Surat Keluar Berhasil Diarsipkan!');
@@ -74,17 +75,18 @@ class SuratKeluarController extends Controller
     {
         $request->validate([
             'tanggal_keluar' => 'required|date',
-            'tujuan_surat'    => 'required',
-            'perihal'   => 'required',
-            'file_surat' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'tujuan_surat'   => 'required',
+            'perihal'        => 'required',
+            // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
+            'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
         ]);
 
         $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
         
         $dataUpdate = [
             'tanggal_keluar' => $request->tanggal_keluar,
-            'tujuan_surat'    => $request->tujuan_surat,
-            'perihal'   => $request->perihal,
+            'tujuan_surat'   => $request->tujuan_surat,
+            'perihal'        => $request->perihal,
         ];
 
         // Cek jika ada file baru yang diupload
