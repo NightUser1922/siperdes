@@ -26,9 +26,9 @@
                         @csrf
                         
                         <div class="mb-3">
-                            <label for="no_surat" class="form-label fw-semibold">Nomor Surat (Otomatis)</label>
-                            <input type="text" class="form-control bg-light" id="no_surat" name="no_surat" value="{{ $noOtomatis ?? 'Nomor akan dibuat otomatis' }}" readonly>
-                            <small class="text-muted">Nomor surat akan digenerate otomatis oleh sistem.</small>
+                            <label for="no_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
+                            {{-- PERBAIKAN: Hapus 'readonly' dan 'bg-light' agar nomor bisa direvisi --}}
+                            <input type="text" class="form-control" id="no_surat" name="no_surat" value="{{ old('no_surat', $suratKeluar->no_surat) }}" required>
                         </div>
 
                         <div class="mb-3">
