@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tb_surat_keluar', function (Blueprint $table) {
-            $table->id();
+            // Menggunakan id_surat_keluar sebagai Primary Key
+            $table->bigIncrements('id_surat_keluar');
+            $table->string('no_surat');
+            $table->date('tanggal_keluar');
+            $table->string('tujuan_surat');
+            $table->text('perihal');
+            $table->string('file_surat')->nullable(); // Boleh kosong
             $table->timestamps();
         });
     }
