@@ -12,20 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tb_surat_masuk', function (Blueprint $table) {
-            // Primary Key sesuai acuan
             $table->bigIncrements('id_surat_masuk');
-            
-            // Kolom data surat
-            $table->string('no_surat');
-            $table->string('pengirim'); // Sesuai acuan pengirim/asal_surat
-            $table->date('tanggal_masuk'); // Sesuai acuan tanggal_masuk
-            $table->text('perihal');
-            
-            // Kolom file scan (boleh kosong)
-            $table->string('file_surat')->nullable();
-            
-            // Pencatat waktu otomatis
+            $table->string('nomor_surat', 100);
+            $table->date('tanggal_surat');
+            $table->string('pengirim', 100);
+            $table->string('perihal', 255);
+            $table->string('file_surat');
+            $table->enum('status_verifikasi', ['Menunggu', 'Disetujui', 'Ditolak']);
+            $table->unsignedBigInteger('id_user');
             $table->timestamps();
+
+            $table->foreign('id_user')
+                ->references('id_user')
+                ->on('tb_user');
         });
     }
 

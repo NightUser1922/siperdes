@@ -13,16 +13,15 @@ return new class extends Migration
     {
         Schema::create('tb_audit_log', function (Blueprint $table) {
             $table->bigIncrements('id_log');
-            $table->unsignedBigInteger('id_user')->nullable();
-            $table->string('aktivitas');
-            $table->string('ip_address', 50);
+            $table->string('aktivitas', 255);
+            $table->string('ip_address', 45);
             $table->timestamp('waktu_akses');
+            $table->unsignedBigInteger('id_user');
             $table->timestamps();
 
             $table->foreign('id_user')
                 ->references('id_user')
-                ->on('tb_user')
-                ->onDelete('cascade');
+                ->on('tb_user');
         });
     }
 

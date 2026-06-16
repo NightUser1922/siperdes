@@ -13,18 +13,16 @@ return new class extends Migration
     {
         Schema::create('tb_bantuan_sosial', function (Blueprint $table) {
             $table->bigIncrements('id_bantuan');
-            $table->string('jenis_bantuan');
-            $table->string('penerima_bantuan');
-            $table->date('tanggal_penyaluran');
-            $table->text('keterangan')->nullable();
-            $table->string('file_dokumen')->nullable();
-            $table->unsignedBigInteger('id_user')->nullable();
+            $table->string('nama_bantuan', 100);
+            $table->string('instansi_pemberi', 100);
+            $table->date('tanggal_bantuan');
+            $table->unsignedInteger('jumlah_penerima');
+            $table->unsignedBigInteger('id_user');
             $table->timestamps();
 
             $table->foreign('id_user')
                 ->references('id_user')
-                ->on('tb_user')
-                ->onDelete('cascade');
+                ->on('tb_user');
         });
     }
 

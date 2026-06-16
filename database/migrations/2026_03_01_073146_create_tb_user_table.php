@@ -9,11 +9,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tb_user', function (Blueprint $table) {
-            $table->id('id_user'); // Menggunakan id_user sesuai rancangan PK
+            $table->bigIncrements('id_user');
+            $table->string('nama', 100);
             $table->string('username', 50);
             $table->string('password', 255);
-            $table->enum('level', ['Admin', 'Kades']); // Ini kolom vital yang tadi hilang
-            $table->string('nama_lengkap', 100);
+            $table->enum('role', ['Admin', 'Kepala Desa']);
             $table->timestamps();
         });
     }
