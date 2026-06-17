@@ -20,7 +20,7 @@ class SuratKeluarController extends Controller
     {
         // Hitung total surat keluar tahun ini untuk nomor urut
         $tahunSekarang = date('Y');
-        $jumlahSurat = SuratKeluar::whereYear('tanggal_keluar', $tahunSekarang)->count();
+        $jumlahSurat = SuratKeluar::whereYear('tanggal_surat', $tahunSekarang)->count();
         
         // Format: 001/SK/AMD/2026
         $noOtomatis = sprintf("%03d", $jumlahSurat + 1) . "/SK/AMD/" . $tahunSekarang;
@@ -32,9 +32,9 @@ class SuratKeluarController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_surat'       => 'required',
-            'tanggal_keluar' => 'required|date',
-            'tujuan_surat'   => 'required',
+            'nomor_surat'    => 'required',
+            'tanggal_surat'  => 'required|date',
+            'tujuan'         => 'required',
             'perihal'        => 'required',
             // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
             'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
@@ -49,11 +49,13 @@ class SuratKeluarController extends Controller
         }
 
         SuratKeluar::create([
-            'no_surat'       => $request->no_surat,
-            'tanggal_keluar' => $request->tanggal_keluar,
-            'tujuan_surat'   => $request->tujuan_surat,
-            'perihal'        => $request->perihal,
-            'file_surat'     => $namaFile,
+            'nomor_surat'         => $request->nomor_surat,
+            'tanggal_surat'       => $request->tanggal_surat,
+            'tujuan'              => $request->tujuan,
+            'perihal'             => $request->perihal,
+            'file_surat'          => $namaFile,
+            'status_persetujuan'  => 'Menunggu',
+            'id_user'             => auth()->user()->id_user,
         ]);
 
         return redirect('/surat-keluar')->with('success', 'Surat Keluar Berhasil Diarsipkan!');
@@ -74,8 +76,8 @@ class SuratKeluarController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'tanggal_keluar' => 'required|date',
-            'tujuan_surat'   => 'required',
+            'tanggal_surat'  => 'required|date',
+            'tujuan'         => 'required',
             'perihal'        => 'required',
             // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
             'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
@@ -84,9 +86,10 @@ class SuratKeluarController extends Controller
         $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
         
         $dataUpdate = [
-            'tanggal_keluar' => $request->tanggal_keluar,
-            'tujuan_surat'   => $request->tujuan_surat,
+            'tanggal_surat'  => $request->tanggal_surat,
+            'tujuan'         => $request->tujuan,
             'perihal'        => $request->perihal,
+            'id_user'        => auth()->user()->id_user,
         ];
 
         // Cek jika ada file baru yang diupload

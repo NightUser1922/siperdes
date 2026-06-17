@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-// Kita tetap butuh Model UserTable jika nanti ingin mencatat log ke database
-use App\Models\UserTable;
 
 class UserController extends Controller
 {
@@ -34,7 +32,7 @@ class UserController extends Controller
             $request->session()->regenerate();
             
             // Logika: User berhasil masuk, IP dicatat (bisa dikembangkan ke tabel log)
-            if (Auth::user()->level == 'Admin') {
+            if (Auth::user()->role == 'Admin') {
                 return redirect()->intended('/admin/dashboard');
             } else {
                 return redirect()->intended('/kades/dashboard');

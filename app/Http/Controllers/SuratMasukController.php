@@ -25,9 +25,9 @@ class SuratMasukController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_surat'       => 'required',
+            'nomor_surat'    => 'required',
             'pengirim'       => 'required',
-            'tanggal_masuk'  => 'required|date',
+            'tanggal_surat'  => 'required|date',
             'perihal'        => 'required',
             // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
             'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
@@ -43,11 +43,13 @@ class SuratMasukController extends Controller
 
         // Mapping ke database sesuai acuan
         SuratMasuk::create([
-            'no_surat'       => $request->no_surat,
-            'pengirim'       => $request->pengirim,
-            'tanggal_masuk'  => $request->tanggal_masuk,
-            'perihal'        => $request->perihal,
-            'file_surat'     => $namaFile,
+            'nomor_surat'        => $request->nomor_surat,
+            'pengirim'           => $request->pengirim,
+            'tanggal_surat'      => $request->tanggal_surat,
+            'perihal'            => $request->perihal,
+            'file_surat'         => $namaFile,
+            'status_verifikasi'  => 'Menunggu',
+            'id_user'            => auth()->user()->id_user,
         ]);
 
         return redirect('/surat-masuk')->with('success', 'Arsip Surat Masuk Berhasil Disimpan!');
@@ -64,9 +66,8 @@ class SuratMasukController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'no_surat'       => 'required',
             'pengirim'       => 'required',
-            'tanggal_masuk'  => 'required|date',
+            'tanggal_surat'  => 'required|date',
             'perihal'        => 'required',
             // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
             'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
@@ -75,10 +76,10 @@ class SuratMasukController extends Controller
         $suratMasuk = SuratMasuk::where('id_surat_masuk', $id)->firstOrFail();
         
         $dataUpdate = [
-            'no_surat'       => $request->no_surat,
             'pengirim'       => $request->pengirim,
-            'tanggal_masuk'  => $request->tanggal_masuk,
+            'tanggal_surat'  => $request->tanggal_surat,
             'perihal'        => $request->perihal,
+            'id_user'        => auth()->user()->id_user,
         ];
 
         // Cek jika ada file baru yang diunggah
