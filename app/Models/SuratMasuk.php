@@ -14,10 +14,12 @@ class SuratMasuk extends Model
     
     // Kolom-kolom yang diizinkan untuk diisi (wajib sama persis dengan Controller dan Database)
     protected $fillable = [
-        'no_surat', 
-        'pengirim', 
-        'tanggal_masuk', 
-        'perihal', 
-        'file_surat'
+        'nomor_surat',
+        'tanggal_surat',
+        'pengirim',
+        'perihal',
+        'file_surat',
+        'status_verifikasi',
+        'id_user'
     ];
 }
