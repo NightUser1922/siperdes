@@ -26,13 +26,13 @@
                         @csrf
                         
                         <div class="mb-3">
-                            <label for="no_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="no_surat" name="no_surat" value="{{ old('no_surat') }}" placeholder="Masukkan nomor surat dari pengirim" required>
+                            <label for="nomor_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nomor_surat" name="nomor_surat" value="{{ old('nomor_surat') }}" placeholder="Masukkan nomor surat dari pengirim" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tanggal_masuk" class="form-label fw-semibold">Tanggal Masuk / Diterima <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="tanggal_masuk" name="tanggal_masuk" value="{{ old('tanggal_masuk', date('Y-m-d')) }}" required>
+                            <label for="tanggal_surat" class="form-label fw-semibold">Tanggal Masuk / Diterima <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="tanggal_surat" name="tanggal_surat" value="{{ old('tanggal_surat', date('Y-m-d')) }}" required>
                         </div>
 
                         <div class="mb-3">

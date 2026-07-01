@@ -26,20 +26,20 @@
                         @csrf
                         
                         <div class="mb-3">
-                            <label for="no_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
+                            <label for="nomor_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
                             {{-- PERBAIKAN: Gunakan $noOtomatis, bukan $suratKeluar --}}
-                            <input type="text" class="form-control" id="no_surat" name="no_surat" value="{{ old('no_surat', $noOtomatis ?? '') }}" required>
+                            <input type="text" class="form-control" id="nomor_surat" name="nomor_surat" value="{{ old('nomor_surat', $noOtomatis ?? '') }}" required>
                             <small class="text-muted">Nomor di atas adalah rekomendasi otomatis. Anda bisa mengubahnya jika diperlukan.</small>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tanggal_keluar" class="form-label fw-semibold">Tanggal Surat <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="tanggal_keluar" name="tanggal_keluar" value="{{ old('tanggal_keluar', date('Y-m-d')) }}" required>
+                            <label for="tanggal_surat" class="form-label fw-semibold">Tanggal Surat <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="tanggal_surat" name="tanggal_surat" value="{{ old('tanggal_surat', date('Y-m-d')) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tujuan_surat" class="form-label fw-semibold">Tujuan / Penerima <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="tujuan_surat" name="tujuan_surat" value="{{ old('tujuan_surat') }}" placeholder="Masukkan nama instansi atau penerima tujuan" required>
+                            <label for="tujuan" class="form-label fw-semibold">Tujuan / Penerima <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="tujuan" name="tujuan" value="{{ old('tujuan') }}" placeholder="Masukkan nama instansi atau penerima tujuan" required>
                         </div>
 
                         <div class="mb-3">

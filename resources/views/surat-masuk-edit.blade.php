@@ -27,13 +27,13 @@
                         @method('PUT')
                         
                         <div class="mb-3">
-                            <label for="no_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="no_surat" name="no_surat" value="{{ old('no_surat', $suratMasuk->no_surat) }}" required>
+                            <label for="nomor_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nomor_surat" name="nomor_surat" value="{{ old('nomor_surat', $suratMasuk->nomor_surat) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tanggal_masuk" class="form-label fw-semibold">Tanggal Masuk / Diterima <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="tanggal_masuk" name="tanggal_masuk" value="{{ old('tanggal_masuk', $suratMasuk->tanggal_masuk) }}" required>
+                            <label for="tanggal_surat" class="form-label fw-semibold">Tanggal Masuk / Diterima <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="tanggal_surat" name="tanggal_surat" value="{{ old('tanggal_surat', $suratMasuk->tanggal_surat) }}" required>
                         </div>
 
                         <div class="mb-3">

@@ -27,19 +27,19 @@
                         @method('PUT')
                         
                         <div class="mb-3">
-                            <label for="no_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
+                            <label for="nomor_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
                             {{-- PERBAIKAN: Hapus 'readonly' dan 'bg-light' agar nomor bisa direvisi --}}
-                            <input type="text" class="form-control" id="no_surat" name="no_surat" value="{{ old('no_surat', $suratKeluar->no_surat) }}" required>
+                            <input type="text" class="form-control" id="nomor_surat" name="nomor_surat" value="{{ old('nomor_surat', $suratKeluar->nomor_surat) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tanggal_keluar" class="form-label fw-semibold">Tanggal Surat <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="tanggal_keluar" name="tanggal_keluar" value="{{ old('tanggal_keluar', $suratKeluar->tanggal_keluar) }}" required>
+                            <label for="tanggal_surat" class="form-label fw-semibold">Tanggal Surat <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="tanggal_surat" name="tanggal_surat" value="{{ old('tanggal_surat', $suratKeluar->tanggal_surat) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tujuan_surat" class="form-label fw-semibold">Tujuan / Penerima <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="tujuan_surat" name="tujuan_surat" value="{{ old('tujuan_surat', $suratKeluar->tujuan_surat) }}" required>
+                            <label for="tujuan" class="form-label fw-semibold">Tujuan / Penerima <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="tujuan" name="tujuan" value="{{ old('tujuan', $suratKeluar->tujuan) }}" required>
                         </div>
 
                         <div class="mb-3">
