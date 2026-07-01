@@ -60,7 +60,7 @@
     <div class="card-body p-4">
         <h5 class="card-title text-success fw-bold">Selamat Datang di SIPERDES!</h5>
         <p class="card-text text-muted">
-            Anda berhasil login sebagai <strong>{{ Auth::user()->level ?? 'Pengguna' }}</strong>. 
+            Anda berhasil login sebagai <strong>{{ Auth::user()->role ?? 'Pengguna' }}</strong>. 
             Gunakan menu navigasi di sebelah kiri untuk mengelola sistem pengarsipan berkas administrasi pada Kantor Desa Amawang Kanan.
         </p>
     </div>
