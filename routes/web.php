@@ -47,11 +47,42 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 function dashboardData() {
     try {
         $totalMasuk = DB::table('tb_surat_masuk')->count();
-        $totalKeluar = DB::table('tb_surat_keluar')->count();
     } catch (\Exception $e) {
         $totalMasuk = 0;
+    }
+
+    try {
+        $totalKeluar = DB::table('tb_surat_keluar')->count();
+    } catch (\Exception $e) {
         $totalKeluar = 0;
     }
+
+    try {
+        $totalKegiatan = DB::table('tb_kegiatan_desa')->count();
+    } catch (\Exception $e) {
+        $totalKegiatan = 0;
+    }
+
+    try {
+        $totalBantuan = DB::table('tb_bantuan_sosial')->count();
+    } catch (\Exception $e) {
+        $totalBantuan = 0;
+    }
+
+    try {
+        $totalAudit = DB::table('tb_audit_log')->count();
+    } catch (\Exception $e) {
+        $totalAudit = null;
+    }
+
     $totalArsip = $totalMasuk + $totalKeluar;
-    return view('dashboard', compact('totalMasuk', 'totalKeluar', 'totalArsip'));
+
+    return view('dashboard', compact(
+        'totalMasuk',
+        'totalKeluar',
+        'totalArsip',
+        'totalKegiatan',
+        'totalBantuan',
+        'totalAudit'
+    ));
 }
