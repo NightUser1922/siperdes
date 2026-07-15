@@ -169,6 +169,103 @@
             border-radius: 14px;
             padding: .9rem 1rem;
         }
+        .module-hero,
+        .module-card,
+        .form-card {
+            border-radius: 18px;
+            border: 1px solid rgba(15, 23, 42, .06);
+        }
+        .module-hero {
+            background: linear-gradient(135deg, #ffffff, #f0fdf4);
+        }
+        .module-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(22, 101, 52, .1);
+            color: #166534;
+            flex: 0 0 54px;
+        }
+        .module-toolbar {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .module-search {
+            max-width: 360px;
+            width: 100%;
+        }
+        .module-search .input-group-text,
+        .module-search .form-control {
+            border-color: rgba(15, 23, 42, .08);
+        }
+        .module-search .input-group-text {
+            background: #f8fafc;
+        }
+        .data-table {
+            margin-bottom: 0;
+        }
+        .data-table thead th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: .78rem;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(15, 23, 42, .08);
+            white-space: nowrap;
+        }
+        .data-table tbody tr {
+            transition: background-color .18s ease;
+        }
+        .data-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .action-btn {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+        .file-link-btn {
+            border-radius: 999px;
+        }
+        .status-badge {
+            border-radius: 999px;
+            padding: .42rem .7rem;
+            font-weight: 600;
+        }
+        .empty-state {
+            padding: 2.5rem 1rem;
+            text-align: center;
+            color: #64748b;
+        }
+        .empty-state i {
+            font-size: 2rem;
+            color: #94a3b8;
+        }
+        .form-section-title {
+            font-size: .82rem;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 700;
+        }
+        .required-dot {
+            color: #dc3545;
+            font-weight: 700;
+        }
+        .current-file-badge {
+            border-radius: 999px;
+            background: #e0f2fe;
+            color: #075985;
+        }
         @media (max-width: 991.98px) {
             .sidebar {
                 width: var(--sidebar-width);
@@ -209,6 +306,9 @@
         @media (max-width: 575.98px) {
             .topbar { align-items: flex-start; flex-direction: column; }
             .topbar-user { width: 100%; justify-content: space-between; }
+            .module-toolbar { align-items: stretch; }
+            .module-toolbar .btn,
+            .module-search { width: 100%; max-width: 100%; }
         }
     </style>
     <script>

@@ -76,6 +76,7 @@ class SuratKeluarController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'nomor_surat'    => 'required',
             'tanggal_surat'  => 'required|date',
             'tujuan'         => 'required',
             'perihal'        => 'required',
@@ -86,6 +87,7 @@ class SuratKeluarController extends Controller
         $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
         
         $dataUpdate = [
+            'nomor_surat'    => $request->nomor_surat,
             'tanggal_surat'  => $request->tanggal_surat,
             'tujuan'         => $request->tujuan,
             'perihal'        => $request->perihal,

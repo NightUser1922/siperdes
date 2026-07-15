@@ -3,18 +3,38 @@
 @section('title', 'Edit Surat Masuk')
 
 @section('content')
-<div class="container-fluid mt-4 mb-5">
+<div class="container-fluid px-0">
+    <div class="card module-hero shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex gap-3 align-items-start">
+                <span class="module-icon fs-3"><i class="bi bi-pencil-square"></i></span>
+                <div>
+                    <span class="badge text-bg-warning mb-2">Surat Masuk</span>
+                    <h4 class="fw-bold text-success mb-1">Edit Surat Masuk</h4>
+                    <p class="text-muted mb-0">Perbarui informasi surat masuk tanpa mengubah proses arsip yang sudah berjalan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-warning py-3">
-                    <h5 class="mb-0 text-dark"><i class="bi bi-pencil-square me-2"></i>Form Edit Surat Masuk</h5>
+            <div class="card form-card shadow-sm border-0">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="module-icon"><i class="bi bi-file-earmark-text"></i></span>
+                        <div>
+                            <p class="form-section-title mb-1">Form Edit</p>
+                            <h5 class="mb-0 fw-bold text-success">Data Surat Masuk</h5>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body p-4">
                     
                     @if ($errors->any())
-                        <div class="alert alert-danger pb-0">
-                            <ul>
+                        <div class="alert alert-danger rounded-4">
+                            <div class="fw-semibold mb-2"><i class="bi bi-exclamation-triangle me-2"></i>Periksa kembali input berikut:</div>
+                            <ul class="mb-0">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -27,22 +47,22 @@
                         @method('PUT')
                         
                         <div class="mb-3">
-                            <label for="nomor_surat" class="form-label fw-semibold">Nomor Surat <span class="text-danger">*</span></label>
+                            <label for="nomor_surat" class="form-label fw-semibold">Nomor Surat <span class="required-dot">*</span></label>
                             <input type="text" class="form-control" id="nomor_surat" name="nomor_surat" value="{{ old('nomor_surat', $suratMasuk->nomor_surat) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tanggal_surat" class="form-label fw-semibold">Tanggal Masuk / Diterima <span class="text-danger">*</span></label>
+                            <label for="tanggal_surat" class="form-label fw-semibold">Tanggal Masuk / Diterima <span class="required-dot">*</span></label>
                             <input type="date" class="form-control" id="tanggal_surat" name="tanggal_surat" value="{{ old('tanggal_surat', $suratMasuk->tanggal_surat) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="pengirim" class="form-label fw-semibold">Pengirim / Asal Surat <span class="text-danger">*</span></label>
+                            <label for="pengirim" class="form-label fw-semibold">Pengirim / Asal Surat <span class="required-dot">*</span></label>
                             <input type="text" class="form-control" id="pengirim" name="pengirim" value="{{ old('pengirim', $suratMasuk->pengirim) }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="perihal" class="form-label fw-semibold">Perihal Surat <span class="text-danger">*</span></label>
+                            <label for="perihal" class="form-label fw-semibold">Perihal Surat <span class="required-dot">*</span></label>
                             <textarea class="form-control" id="perihal" name="perihal" rows="3" required>{{ old('perihal', $suratMasuk->perihal) }}</textarea>
                         </div>
 
@@ -57,9 +77,9 @@
                             
                             @if($suratMasuk->file_surat)
                                 <div class="mt-2">
-                                    <span class="badge bg-info text-dark">
+                                    <span class="badge current-file-badge">
                                         File saat ini: 
-                                        <a href="{{ asset('uploads/surat_masuk/'.$suratMasuk->file_surat) }}" target="_blank" class="text-dark text-decoration-none">
+                                        <a href="{{ asset('uploads/surat_masuk/'.$suratMasuk->file_surat) }}" target="_blank" class="text-decoration-none text-reset">
                                             {{ $suratMasuk->file_surat }}
                                         </a>
                                     </span>
@@ -67,9 +87,9 @@
                             @endif
                         </div>
 
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ url('/surat-masuk') }}" class="btn btn-secondary px-4">Kembali</a>
-                            <button type="submit" class="btn btn-warning px-5"><i class="bi bi-save me-1"></i> Update Arsip</button>
+                        <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 mt-4">
+                            <a href="{{ url('/surat-masuk') }}" class="btn btn-light border px-4 rounded-pill"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                            <button type="submit" class="btn btn-warning px-5 rounded-pill"><i class="bi bi-save me-1"></i> Update Arsip</button>
                         </div>
                     </form>
                 </div>

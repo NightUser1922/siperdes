@@ -35,19 +35,19 @@
                         <td>
                             {{-- PERBAIKAN: Gunakan id_surat_keluar --}}
                             <a href="/surat-keluar/edit/{{ $sk->id_surat_keluar }}" class="btn btn-warning btn-sm mb-1">Edit</a>
-                            <form action="/surat-keluar/delete/{{ $sk->id_surat_keluar }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus arsip surat {{ $sk->no_surat }}?');">
+                            <form action="/surat-keluar/delete/{{ $sk->id_surat_keluar }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus arsip surat {{ $sk->nomor_surat }}?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm mb-1">Hapus</button>
                             </form>
                         </td>
-                        <td class="fw-bold">{{ $sk->no_surat }}</td>
+                        <td class="fw-bold">{{ $sk->nomor_surat }}</td>
                         
-                        {{-- PERBAIKAN: Gunakan tanggal_keluar --}}
-                        <td>{{ \Carbon\Carbon::parse($sk->tanggal_keluar)->format('d-m-Y') }}</td>
+                        {{-- PERBAIKAN: Gunakan tanggal_surat --}}
+                        <td>{{ \Carbon\Carbon::parse($sk->tanggal_surat)->format('d-m-Y') }}</td>
                         
-                        {{-- PERBAIKAN: Gunakan tujuan_surat --}}
-                        <td>{{ $sk->tujuan_surat }}</td>
+                        {{-- PERBAIKAN: Gunakan tujuan --}}
+                        <td>{{ $sk->tujuan }}</td>
                         <td class="text-start">{{ $sk->perihal }}</td>
                         <td>
                             {{-- PERBAIKAN: Gunakan file_surat --}}
