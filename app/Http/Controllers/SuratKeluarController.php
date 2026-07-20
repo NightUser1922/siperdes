@@ -32,12 +32,12 @@ class SuratKeluarController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nomor_surat'    => 'required',
+            'nomor_surat'    => 'required|string|max:100',
             'tanggal_surat'  => 'required|date',
-            'tujuan'         => 'required',
-            'perihal'        => 'required',
+            'tujuan'         => 'required|string|max:100',
+            'perihal'        => 'required|string|max:255',
             // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
-            'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
+            'file_surat'     => 'required|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
         ]);
 
         $namaFile = null;
@@ -76,10 +76,10 @@ class SuratKeluarController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nomor_surat'    => 'required',
+            'nomor_surat'    => 'required|string|max:100',
             'tanggal_surat'  => 'required|date',
-            'tujuan'         => 'required',
-            'perihal'        => 'required',
+            'tujuan'         => 'required|string|max:100',
+            'perihal'        => 'required|string|max:255',
             // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
             'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
         ]);

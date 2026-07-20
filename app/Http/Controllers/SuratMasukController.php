@@ -25,12 +25,12 @@ class SuratMasukController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nomor_surat'    => 'required',
-            'pengirim'       => 'required',
+            'nomor_surat'    => 'required|string|max:100',
+            'pengirim'       => 'required|string|max:100',
             'tanggal_surat'  => 'required|date',
-            'perihal'        => 'required',
+            'perihal'        => 'required|string|max:255',
             // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
-            'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
+            'file_surat'     => 'required|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
         ]);
 
         $namaFile = null;
@@ -66,9 +66,10 @@ class SuratMasukController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'pengirim'       => 'required',
+            'nomor_surat'    => 'required|string|max:100',
+            'pengirim'       => 'required|string|max:100',
             'tanggal_surat'  => 'required|date',
-            'perihal'        => 'required',
+            'perihal'        => 'required|string|max:255',
             // PERBAIKAN: Hapus image, tambahkan ekstensi office, ubah max ke 5120
             'file_surat'     => 'nullable|mimes:jpg,png,jpeg,pdf,doc,docx,xls,xlsx|max:5120',
         ]);
@@ -76,6 +77,7 @@ class SuratMasukController extends Controller
         $suratMasuk = SuratMasuk::where('id_surat_masuk', $id)->firstOrFail();
         
         $dataUpdate = [
+            'nomor_surat'    => $request->nomor_surat,
             'pengirim'       => $request->pengirim,
             'tanggal_surat'  => $request->tanggal_surat,
             'perihal'        => $request->perihal,

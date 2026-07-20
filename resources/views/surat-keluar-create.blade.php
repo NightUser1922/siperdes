@@ -48,8 +48,8 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="file_surat" class="form-label fw-semibold">Upload Berkas Dokumen (Opsional)</label>
-                            <input class="form-control" type="file" id="file_surat" name="file_surat" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                            <label for="file_surat" class="form-label fw-semibold">Upload Berkas Dokumen <span class="text-danger">*</span></label>
+                            <input class="form-control" type="file" id="file_surat" name="file_surat" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" required>
                             <small class="text-muted">Format file: PDF, JPG, PNG, DOC/X, XLS/X. Maksimal 5MB.</small>
                         </div>
 

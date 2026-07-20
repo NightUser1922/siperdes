@@ -66,10 +66,10 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="file_surat" class="form-label fw-semibold">Upload Berkas Dokumen (Opsional)</label>
+                            <label for="file_surat" class="form-label fw-semibold">Upload Berkas Dokumen <span class="required-dot">*</span></label>
                             
                             {{-- PERBAIKAN: Tambahkan doc, docx, xls, xlsx pada accept --}}
-                            <input class="form-control" type="file" id="file_surat" name="file_surat" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                            <input class="form-control" type="file" id="file_surat" name="file_surat" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" required>
                             
                             {{-- PERBAIKAN: Teks keterangan disesuaikan --}}
                             <small class="text-muted">Format yang diizinkan: PDF, JPG, PNG, DOC/DOCX, XLS/XLSX. Maksimal 5MB.</small>
