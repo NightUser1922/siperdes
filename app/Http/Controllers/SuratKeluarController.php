@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class SuratKeluarController extends Controller
 {
@@ -58,7 +57,7 @@ class SuratKeluarController extends Controller
             'id_user'             => auth()->user()->id_user,
         ]);
 
-        return redirect('/surat-keluar')->with('success', 'Surat Keluar Berhasil Diarsipkan!');
+        return redirect('/surat-keluar')->with('success', 'Data Surat Keluar berhasil disimpan!');
     }
 
     // ----------------------------------------------------
@@ -126,6 +125,6 @@ class SuratKeluarController extends Controller
 
         $suratKeluar->delete();
 
-        return redirect('/surat-keluar')->with('success', 'Arsip Surat Keluar berhasil dihapus!');
+        return redirect('/surat-keluar')->with('success', 'Data Surat Keluar berhasil dihapus!');
     }
 }

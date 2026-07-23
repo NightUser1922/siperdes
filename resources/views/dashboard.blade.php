@@ -10,7 +10,7 @@
                 <span class="badge text-bg-success mb-2">SIPERDES</span>
                 <h4 class="fw-bold text-success mb-2">Ringkasan Administrasi Desa</h4>
                 <p class="text-muted mb-0">
-                    Pantau data surat, kegiatan desa, bantuan sosial, dan audit sistem secara ringkas melalui dashboard utama.
+                    Pantau data surat masuk, surat keluar, kegiatan desa, dan bantuan sosial melalui dashboard utama.
                 </p>
             </div>
             <div class="col-lg-5">
@@ -34,111 +34,88 @@
 </div>
 
 <div class="row g-4">
-    <div class="col-md-6 col-xl-4">
-        <div class="card summary-card shadow-sm border-0 border-start border-success border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-2">Total Surat Masuk</h6>
-                        <h3 class="fw-bold text-success mb-0">{{ $totalMasuk }}</h3>
-                    </div>
-                    <div class="summary-icon fs-1 text-success">
-                        <i class="bi bi-inbox"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-4">
-        <div class="card summary-card shadow-sm border-0 border-start border-primary border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-2">Total Surat Keluar</h6>
-                        <h3 class="fw-bold text-primary mb-0">{{ $totalKeluar }}</h3>
-                    </div>
-                    <div class="summary-icon fs-1 text-primary">
-                        <i class="bi bi-send"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-4">
-        <div class="card summary-card shadow-sm border-0 border-start border-info border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-2">Total Kegiatan Desa</h6>
-                        <h3 class="fw-bold text-info mb-0">{{ $totalKegiatan }}</h3>
-                    </div>
-                    <div class="summary-icon fs-1 text-info">
-                        <i class="bi bi-calendar-event"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-4">
-        <div class="card summary-card shadow-sm border-0 border-start border-danger border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-2">Total Bantuan Sosial</h6>
-                        <h3 class="fw-bold text-danger mb-0">{{ $totalBantuan }}</h3>
-                    </div>
-                    <div class="summary-icon fs-1 text-danger">
-                        <i class="bi bi-people"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-4">
-        <div class="card summary-card shadow-sm border-0 border-start border-warning border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-2">Total Arsip Administrasi</h6>
-                        <h3 class="fw-bold text-warning mb-0">{{ $totalArsip }}</h3>
-                    </div>
-                    <div class="summary-icon fs-1 text-warning">
-                        <i class="bi bi-folder2-open"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @if (!is_null($totalAudit))
-        <div class="col-md-6 col-xl-4">
-            <div class="card summary-card shadow-sm border-0 border-start border-secondary border-4 h-100">
+    <div class="col-md-6 col-xl-3">
+        <a href="{{ url('/surat-masuk') }}" class="text-decoration-none text-reset d-block h-100">
+            <div class="card summary-card shadow-sm border-0 border-start border-success border-4 h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">Total Audit Log</h6>
-                            <h3 class="fw-bold text-secondary mb-0">{{ $totalAudit }}</h3>
+                            <h6 class="text-muted mb-2">Total Surat Masuk</h6>
+                            <h3 class="fw-bold text-success mb-1">{{ $totalMasuk }}</h3>
+                            <small class="text-success">Buka data</small>
                         </div>
-                        <div class="summary-icon fs-1 text-secondary">
-                            <i class="bi bi-shield-check"></i>
+                        <div class="summary-icon fs-1 text-success">
+                            <i class="bi bi-inbox"></i>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+        </a>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <a href="{{ url('/surat-keluar') }}" class="text-decoration-none text-reset d-block h-100">
+            <div class="card summary-card shadow-sm border-0 border-start border-primary border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Surat Keluar</h6>
+                            <h3 class="fw-bold text-primary mb-1">{{ $totalKeluar }}</h3>
+                            <small class="text-primary">Buka data</small>
+                        </div>
+                        <div class="summary-icon fs-1 text-primary">
+                            <i class="bi bi-send"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <a href="{{ url('/kegiatan-desa') }}" class="text-decoration-none text-reset d-block h-100">
+            <div class="card summary-card shadow-sm border-0 border-start border-info border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Kegiatan Desa</h6>
+                            <h3 class="fw-bold text-info mb-1">{{ $totalKegiatan }}</h3>
+                            <small class="text-info">Buka data</small>
+                        </div>
+                        <div class="summary-icon fs-1 text-info">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <a href="{{ url('/bantuan-sosial') }}" class="text-decoration-none text-reset d-block h-100">
+            <div class="card summary-card shadow-sm border-0 border-start border-danger border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Bantuan Sosial</h6>
+                            <h3 class="fw-bold text-danger mb-1">{{ $totalBantuan }}</h3>
+                            <small class="text-danger">Buka data</small>
+                        </div>
+                        <div class="summary-icon fs-1 text-danger">
+                            <i class="bi bi-people"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
 </div>
 
 <div class="card dashboard-info-card shadow-sm border-0 mt-4">
     <div class="card-body p-4">
         <h5 class="card-title text-success fw-bold">Selamat Datang di SIPERDES!</h5>
-        <p class="card-text text-muted">
-            Anda berhasil login sebagai <strong>{{ Auth::user()->role ?? 'Pengguna' }}</strong>. 
-            Gunakan menu navigasi di sebelah kiri untuk mengelola sistem pengarsipan berkas administrasi pada Kantor Desa Amawang Kanan.
+        <p class="card-text text-muted mb-0">
+            Anda berhasil login sebagai <strong>{{ Auth::user()->role ?? 'Pengguna' }}</strong>. Gunakan menu navigasi untuk mengelola data administrasi desa yang sudah tersedia.
         </p>
     </div>
 </div>

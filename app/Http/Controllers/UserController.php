@@ -10,6 +10,10 @@ class UserController extends Controller
     // Menampilkan halaman login dengan deteksi IP
     public function index(Request $request)
     {
+        if (Auth::check()) {
+            return redirect($this->dashboardPath(Auth::user()->role));
+        }
+
         // Menangkap IP Address pengakses
         $ipAddress = $request->ip();
         
@@ -21,8 +25,8 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'username' => 'required',
-            'password' => 'required',
+            'username' => 'required|string|max:50',
+            'password' => 'required|string|max:255',
         ]);
 
         // Deteksi IP saat tombol login ditekan
@@ -30,13 +34,8 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
-            // Logika: User berhasil masuk, IP dicatat (bisa dikembangkan ke tabel log)
-            if (Auth::user()->role == 'Admin') {
-                return redirect()->intended('/admin/dashboard');
-            } else {
-                return redirect()->intended('/kades/dashboard');
-            }
+
+            return redirect($this->dashboardPath(Auth::user()->role));
         }
 
         // Jika gagal, tampilkan pesan error beserta IP-nya (sebagai peringatan)
@@ -49,5 +48,10 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
+    }
+
+    private function dashboardPath(string $role): string
+    {
+        return $role === 'Admin' ? '/admin/dashboard' : '/kades/dashboard';
     }
 }

@@ -11,11 +11,10 @@ class BantuanSosial extends Model
     protected $primaryKey = 'id_bantuan';
 
     protected $fillable = [
-        'jenis_bantuan',
-        'penerima_bantuan',
-        'tanggal_penyaluran',
-        'keterangan',
-        'file_dokumen',
+        'nama_bantuan',
+        'instansi_pemberi',
+        'tanggal_bantuan',
+        'jumlah_penerima',
         'id_user'
     ];
 }

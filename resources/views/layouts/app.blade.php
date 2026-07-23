@@ -335,7 +335,13 @@
         <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Menu Utama</small>
         
         {{-- LINK DASHBOARD --}}
-        <a href="{{ url('/admin/dashboard') }}" class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">
+        @php
+            $dashboardUrl = Auth::check() && Auth::user()->role === 'Kepala Desa'
+                ? url('/kades/dashboard')
+                : url('/admin/dashboard');
+        @endphp
+
+        <a href="{{ $dashboardUrl }}" class="{{ Request::is('admin/dashboard') || Request::is('kades/dashboard') ? 'active' : '' }}">
             <i class="bi bi-speedometer2 me-2"></i><span class="menu-text">Dashboard</span>
         </a>
         
@@ -350,11 +356,19 @@
         </a>
 
         <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Ekspansi (Fitur Baru)</small>
-        <a href="#"><i class="bi bi-folder2-open me-2"></i><span class="menu-text">Arsip Dokumen</span></a>
-        <a href="#"><i class="bi bi-bar-chart-line me-2"></i><span class="menu-text">Laporan Analitik</span></a>
+        <a href="{{ url('/kegiatan-desa') }}" class="{{ Request::is('kegiatan-desa*') ? 'active' : '' }}">
+            <i class="bi bi-calendar-event me-2"></i><span class="menu-text">Kegiatan Desa</span>
+        </a>
+
+        <a href="{{ url('/bantuan-sosial') }}" class="{{ Request::is('bantuan-sosial*') ? 'active' : '' }}">
+            <i class="bi bi-people me-2"></i><span class="menu-text">Bantuan Sosial</span>
+        </a>
+
+        <a href="#"><i class="bi bi-folder2-open me-2"></i><span class="menu-text">Arsip Digital</span></a>
+        <a href="#"><i class="bi bi-bar-chart-line me-2"></i><span class="menu-text">Laporan</span></a>
 
         <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Sistem</small>
-        <a href="#"><i class="bi bi-shield-lock me-2"></i><span class="menu-text">Log Akses</span></a>
+        <a href="#"><i class="bi bi-shield-lock me-2"></i><span class="menu-text">Audit Log</span></a>
         </div>
     </div>
 
@@ -433,6 +447,80 @@
                 if (!isMobile()) closeMobileSidebar();
                 updateExpandedState();
             });
+        (function () {
+            document.querySelectorAll('[data-admin-table]').forEach(function (tableBody) {
+                const searchInput = document.querySelector(tableBody.dataset.searchInput || '');
+                const pagination = document.querySelector(tableBody.dataset.pagination || '');
+                const tableInfo = document.querySelector(tableBody.dataset.tableInfo || '');
+                const emptySearchRow = document.querySelector(tableBody.dataset.emptyRow || '');
+                const rows = Array.from(tableBody.querySelectorAll('[data-search-row]'));
+                const pageSize = parseInt(tableBody.dataset.pageSize || '10', 10);
+                const itemLabel = tableBody.dataset.itemLabel || 'data';
+                let currentPage = 1;
+
+                function filteredRows() {
+                    const keyword = (searchInput?.value || '').trim().toLowerCase();
+                    return rows.filter(function (row) {
+                        return row.dataset.searchRow.includes(keyword);
+                    });
+                }
+
+                function render() {
+                    const visibleRows = filteredRows();
+                    const totalPages = Math.max(1, Math.ceil(visibleRows.length / pageSize));
+                    currentPage = Math.min(currentPage, totalPages);
+                    const start = (currentPage - 1) * pageSize;
+                    const end = start + pageSize;
+
+                    rows.forEach(function (row) {
+                        row.classList.add('d-none');
+                    });
+
+                    visibleRows.slice(start, end).forEach(function (row) {
+                        row.classList.remove('d-none');
+                    });
+
+                    if (emptySearchRow) {
+                        emptySearchRow.classList.toggle('d-none', visibleRows.length !== 0 || rows.length === 0);
+                    }
+
+                    if (tableInfo) {
+                        tableInfo.textContent = `Menampilkan ${visibleRows.length} dari ${rows.length} ${itemLabel}`;
+                    }
+
+                    if (!pagination) return;
+                    pagination.innerHTML = '';
+                    if (visibleRows.length <= pageSize) return;
+
+                    for (let page = 1; page <= totalPages; page++) {
+                        const item = document.createElement('li');
+                        item.className = `page-item ${page === currentPage ? 'active' : ''}`;
+
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = 'page-link';
+                        button.textContent = page;
+                        button.addEventListener('click', function () {
+                            currentPage = page;
+                            render();
+                        });
+
+                        item.appendChild(button);
+                        pagination.appendChild(item);
+                    }
+                }
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', function () {
+                        currentPage = 1;
+                        render();
+                    });
+                }
+
+                render();
+            });
+        })();
+
 
             updateExpandedState();
         })();

@@ -15,7 +15,6 @@ class KegiatanDesa extends Model
         'tanggal_kegiatan',
         'lokasi',
         'keterangan',
-        'file_dokumen',
         'id_user'
     ];
 }

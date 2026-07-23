@@ -52,7 +52,7 @@ class SuratMasukController extends Controller
             'id_user'            => auth()->user()->id_user,
         ]);
 
-        return redirect('/surat-masuk')->with('success', 'Arsip Surat Masuk Berhasil Disimpan!');
+        return redirect('/surat-masuk')->with('success', 'Data Surat Masuk berhasil disimpan!');
     }
 
     // 4. MENAMPILKAN FORM EDIT
@@ -116,6 +116,6 @@ class SuratMasukController extends Controller
 
         $suratMasuk->delete();
 
-        return redirect('/surat-masuk')->with('success', 'Arsip Surat Masuk berhasil dihapus!');
+        return redirect('/surat-masuk')->with('success', 'Data Surat Masuk berhasil dihapus!');
     }
 }

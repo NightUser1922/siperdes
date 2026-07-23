@@ -3,20 +3,40 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratKeluarController;
+use App\Http\Controllers\KegiatanDesaController;
+use App\Http\Controllers\BantuanSosialController;
+use App\Models\BantuanSosial;
+use App\Models\KegiatanDesa;
+use App\Models\SuratKeluar;
+use App\Models\SuratMasuk;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB; 
 
 Route::get('/', [UserController::class, 'index'])->name('login');
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout']);
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
-    
     Route::get('/admin/dashboard', function () {
+        if (auth()->user()->role === 'Kepala Desa') {
+            return redirect('/kades/dashboard');
+        }
+
+        if (auth()->user()->role !== 'Admin') {
+            abort(403);
+        }
+
         return dashboardData();
     });
 
     Route::get('/kades/dashboard', function () {
+        if (auth()->user()->role === 'Admin') {
+            return redirect('/admin/dashboard');
+        }
+
+        if (auth()->user()->role !== 'Kepala Desa') {
+            abort(403);
+        }
+
         return dashboardData();
     });
 
@@ -26,8 +46,6 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/surat-masuk', [SuratMasukController::class, 'index']);
     Route::get('/surat-masuk/create', [SuratMasukController::class, 'create']);
     Route::post('/surat-masuk/store', [SuratMasukController::class, 'store']);
-    
-    // RUTE BARU: Edit, Update, dan Delete Surat Masuk
     Route::get('/surat-masuk/edit/{id}', [SuratMasukController::class, 'edit']);
     Route::put('/surat-masuk/update/{id}', [SuratMasukController::class, 'update']);
     Route::delete('/surat-masuk/delete/{id}', [SuratMasukController::class, 'destroy']);
@@ -38,51 +56,62 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/surat-keluar', [SuratKeluarController::class, 'index']);
     Route::get('/surat-keluar/create', [SuratKeluarController::class, 'create']);
     Route::post('/surat-keluar/store', [SuratKeluarController::class, 'store']);
-    
     Route::get('/surat-keluar/edit/{id}', [SuratKeluarController::class, 'edit']);
     Route::put('/surat-keluar/update/{id}', [SuratKeluarController::class, 'update']);
     Route::delete('/surat-keluar/delete/{id}', [SuratKeluarController::class, 'destroy']);
+
+    // ==========================================
+    // ROUTE KEGIATAN DESA
+    // ==========================================
+    Route::get('/kegiatan-desa', [KegiatanDesaController::class, 'index']);
+    Route::get('/kegiatan-desa/create', [KegiatanDesaController::class, 'create']);
+    Route::post('/kegiatan-desa/store', [KegiatanDesaController::class, 'store']);
+    Route::get('/kegiatan-desa/edit/{id}', [KegiatanDesaController::class, 'edit']);
+    Route::put('/kegiatan-desa/update/{id}', [KegiatanDesaController::class, 'update']);
+    Route::delete('/kegiatan-desa/delete/{id}', [KegiatanDesaController::class, 'destroy']);
+
+    // ==========================================
+    // ROUTE BANTUAN SOSIAL
+    // ==========================================
+    Route::get('/bantuan-sosial', [BantuanSosialController::class, 'index']);
+    Route::get('/bantuan-sosial/create', [BantuanSosialController::class, 'create']);
+    Route::post('/bantuan-sosial/store', [BantuanSosialController::class, 'store']);
+    Route::get('/bantuan-sosial/edit/{id}', [BantuanSosialController::class, 'edit']);
+    Route::put('/bantuan-sosial/update/{id}', [BantuanSosialController::class, 'update']);
+    Route::delete('/bantuan-sosial/delete/{id}', [BantuanSosialController::class, 'destroy']);
 });
 
-function dashboardData() {
+function dashboardData()
+{
     try {
-        $totalMasuk = DB::table('tb_surat_masuk')->count();
+        $totalMasuk = SuratMasuk::count();
     } catch (\Exception $e) {
         $totalMasuk = 0;
     }
 
     try {
-        $totalKeluar = DB::table('tb_surat_keluar')->count();
+        $totalKeluar = SuratKeluar::count();
     } catch (\Exception $e) {
         $totalKeluar = 0;
     }
 
     try {
-        $totalKegiatan = DB::table('tb_kegiatan_desa')->count();
+        $totalKegiatan = KegiatanDesa::count();
     } catch (\Exception $e) {
         $totalKegiatan = 0;
     }
 
     try {
-        $totalBantuan = DB::table('tb_bantuan_sosial')->count();
+        $totalBantuan = BantuanSosial::count();
     } catch (\Exception $e) {
         $totalBantuan = 0;
     }
 
-    try {
-        $totalAudit = DB::table('tb_audit_log')->count();
-    } catch (\Exception $e) {
-        $totalAudit = null;
-    }
-
-    $totalArsip = $totalMasuk + $totalKeluar;
 
     return view('dashboard', compact(
         'totalMasuk',
         'totalKeluar',
-        'totalArsip',
         'totalKegiatan',
-        'totalBantuan',
-        'totalAudit'
+        'totalBantuan'
     ));
 }

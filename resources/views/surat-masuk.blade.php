@@ -11,6 +11,13 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="card module-hero shadow-sm border-0 mb-4">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
@@ -57,7 +64,7 @@
                             <th>Dokumen</th>
                         </tr>
                     </thead>
-                    <tbody id="suratMasukTableBody">
+                    <tbody id="suratMasukTableBody" data-admin-table data-search-input="#suratMasukSearch" data-pagination="#suratMasukPagination" data-table-info="#suratMasukTableInfo" data-empty-row="#suratMasukSearchEmpty" data-item-label="data surat masuk">
                         @forelse($suratMasuk as $surat)
                             <tr data-search-row="{{ strtolower($surat->nomor_surat.' '.$surat->pengirim.' '.$surat->perihal.' '.$surat->status_verifikasi) }}">
                                 <td>
@@ -131,68 +138,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('suratMasukSearch');
-        const rows = Array.from(document.querySelectorAll('[data-search-row]'));
-        const pagination = document.getElementById('suratMasukPagination');
-        const tableInfo = document.getElementById('suratMasukTableInfo');
-        const emptySearchRow = document.getElementById('suratMasukSearchEmpty');
-        const pageSize = 10;
-        let currentPage = 1;
-
-        function filteredRows() {
-            const keyword = (searchInput?.value || '').trim().toLowerCase();
-            return rows.filter(row => row.dataset.searchRow.includes(keyword));
-        }
-
-        function render() {
-            const visibleRows = filteredRows();
-            const totalPages = Math.max(1, Math.ceil(visibleRows.length / pageSize));
-            currentPage = Math.min(currentPage, totalPages);
-            const start = (currentPage - 1) * pageSize;
-            const end = start + pageSize;
-
-            rows.forEach(row => row.classList.add('d-none'));
-            visibleRows.slice(start, end).forEach(row => row.classList.remove('d-none'));
-
-            if (emptySearchRow) {
-                emptySearchRow.classList.toggle('d-none', visibleRows.length !== 0 || rows.length === 0);
-            }
-
-            if (tableInfo) {
-                tableInfo.textContent = `Menampilkan ${visibleRows.length} dari ${rows.length} data surat masuk`;
-            }
-
-            if (!pagination) return;
-            pagination.innerHTML = '';
-            if (visibleRows.length <= pageSize) return;
-
-            for (let page = 1; page <= totalPages; page++) {
-                const item = document.createElement('li');
-                item.className = `page-item ${page === currentPage ? 'active' : ''}`;
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'page-link';
-                button.textContent = page;
-                button.addEventListener('click', function () {
-                    currentPage = page;
-                    render();
-                });
-                item.appendChild(button);
-                pagination.appendChild(item);
-            }
-        }
-
-        if (searchInput) {
-            searchInput.addEventListener('input', function () {
-                currentPage = 1;
-                render();
-            });
-        }
-
-        render();
-    });
-</script>
 @endsection
