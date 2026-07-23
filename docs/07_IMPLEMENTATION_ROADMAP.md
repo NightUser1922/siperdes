@@ -76,5 +76,32 @@
 
 # 
 
-# Testing seluruh CRUD
+Testing seluruh CRUD
+
+## Implementasi Arsip Digital
+===
+
+# 
+
+# Modul Arsip Digital menggunakan Google Drive sebagai backend storage.
+
+# 
+
+# Prinsip implementasi:
+
+# 
+
+# \- Google Drive hanya sebagai media penyimpanan.
+
+# \- Hak akses tetap dikontrol Laravel.
+
+# \- File tidak boleh dibuat public.
+
+# \- Tidak menggunakan permission "Anyone with the link".
+
+# \- Preview dan download harus melalui controller Laravel.
+
+# \- Hanya Admin dan Kepala Desa yang boleh mengakses Arsip Digital.
+
+# \- Database menyimpan metadata file, bukan isi file.
 

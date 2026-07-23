@@ -4,6 +4,12 @@
 
 @section('content')
 <div class="container-fluid px-0">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ Auth::check() && Auth::user()->role === 'Kepala Desa' ? url('/kades/dashboard') : url('/admin/dashboard') }}" class="text-decoration-none text-success">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Bantuan Sosial</li>
+        </ol>
+    </nav>
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
             <i class="bi bi-check-circle me-2"></i>{{ session('success') }}

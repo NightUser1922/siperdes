@@ -4,6 +4,13 @@
 
 @section('content')
 <div class="container-fluid px-0">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ Auth::check() && Auth::user()->role === 'Kepala Desa' ? url('/kades/dashboard') : url('/admin/dashboard') }}" class="text-decoration-none text-success">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url('/kegiatan-desa') }}" class="text-decoration-none text-success">Kegiatan Desa</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Tambah Kegiatan Desa</li>
+        </ol>
+    </nav>
     <div class="card module-hero shadow-sm border-0 mb-4">
         <div class="card-body p-4">
             <div class="d-flex gap-3 align-items-start">
