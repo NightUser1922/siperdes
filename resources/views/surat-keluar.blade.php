@@ -66,7 +66,7 @@
                     </thead>
                     <tbody id="suratKeluarTableBody" data-admin-table data-search-input="#suratKeluarSearch" data-pagination="#suratKeluarPagination" data-table-info="#suratKeluarTableInfo" data-empty-row="#suratKeluarSearchEmpty" data-item-label="data surat keluar">
                         @forelse($suratKeluar as $surat)
-                            <tr data-search-row="{{ strtolower($surat->nomor_surat.' '.$surat->tujuan.' '.$surat->perihal.' '.$surat->status_persetujuan) }}">
+                            <tr data-search-row="{{ strtolower($surat->nomor_surat.' '.$surat->tujuan.' '.$surat->perihal.' '.($surat->status_persetujuan ?? 'Menunggu')) }}">
                                 <td>
                                     <div class="d-inline-flex gap-1">
                                         <a href="/surat-keluar/edit/{{ $surat->id_surat_keluar }}" class="btn btn-warning btn-sm action-btn" title="Edit">
@@ -87,7 +87,7 @@
                                 <td class="text-start">{{ $surat->perihal }}</td>
                                 <td>
                                     @php
-                                        $statusClass = match($surat->status_persetujuan) {
+                                        $statusClass = match($surat->status_persetujuan ?? 'Menunggu') {
                                             'Disetujui' => 'text-bg-success',
                                             'Ditolak' => 'text-bg-danger',
                                             default => 'text-bg-warning',

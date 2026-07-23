@@ -330,48 +330,50 @@
             <span class="sidebar-logo"><i class="bi bi-bank"></i></span>
             <span class="sidebar-brand-text">SIPERDES</span>
         </h4>
-        
+
         <div class="sidebar-nav">
-        <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Menu Utama</small>
-        
-        {{-- LINK DASHBOARD --}}
-        @php
-            $dashboardUrl = Auth::check() && Auth::user()->role === 'Kepala Desa'
-                ? url('/kades/dashboard')
-                : url('/admin/dashboard');
-        @endphp
+            @php
+                $dashboardUrl = Auth::check() && Auth::user()->role === 'Kepala Desa'
+                    ? url('/kades/dashboard')
+                    : url('/admin/dashboard');
+            @endphp
 
-        <a href="{{ $dashboardUrl }}" class="{{ Request::is('admin/dashboard') || Request::is('kades/dashboard') ? 'active' : '' }}">
-            <i class="bi bi-speedometer2 me-2"></i><span class="menu-text">Dashboard</span>
-        </a>
-        
-        {{-- LINK SURAT MASUK --}}
-        <a href="{{ url('/surat-masuk') }}" class="{{ Request::is('surat-masuk*') ? 'active' : '' }}">
-            <i class="bi bi-inbox me-2"></i><span class="menu-text">Surat Masuk</span>
-        </a>
-        
-        {{-- LINK SURAT KELUAR --}}
-        <a href="{{ url('/surat-keluar') }}" class="{{ Request::is('surat-keluar*') ? 'active' : '' }}">
-            <i class="bi bi-send me-2"></i><span class="menu-text">Surat Keluar</span>
-        </a>
+            <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Menu Utama</small>
+            <a href="{{ $dashboardUrl }}" class="{{ Request::is('admin/dashboard') || Request::is('kades/dashboard') ? 'active' : '' }}">
+                <i class="bi bi-speedometer2 me-2"></i><span class="menu-text">Dashboard</span>
+            </a>
 
-        <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Ekspansi (Fitur Baru)</small>
-        <a href="{{ url('/kegiatan-desa') }}" class="{{ Request::is('kegiatan-desa*') ? 'active' : '' }}">
-            <i class="bi bi-calendar-event me-2"></i><span class="menu-text">Kegiatan Desa</span>
-        </a>
+            <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Administrasi</small>
+            <a href="{{ url('/surat-masuk') }}" class="{{ Request::is('surat-masuk*') ? 'active' : '' }}">
+                <i class="bi bi-inbox me-2"></i><span class="menu-text">Surat Masuk</span>
+            </a>
 
-        <a href="{{ url('/bantuan-sosial') }}" class="{{ Request::is('bantuan-sosial*') ? 'active' : '' }}">
-            <i class="bi bi-people me-2"></i><span class="menu-text">Bantuan Sosial</span>
-        </a>
+            <a href="{{ url('/surat-keluar') }}" class="{{ Request::is('surat-keluar*') ? 'active' : '' }}">
+                <i class="bi bi-send me-2"></i><span class="menu-text">Surat Keluar</span>
+            </a>
 
-        <a href="#"><i class="bi bi-folder2-open me-2"></i><span class="menu-text">Arsip Digital</span></a>
-        <a href="#"><i class="bi bi-bar-chart-line me-2"></i><span class="menu-text">Laporan</span></a>
+            <a href="{{ url('/kegiatan-desa') }}" class="{{ Request::is('kegiatan-desa*') ? 'active' : '' }}">
+                <i class="bi bi-calendar-event me-2"></i><span class="menu-text">Kegiatan Desa</span>
+            </a>
 
-        <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Sistem</small>
-        <a href="#"><i class="bi bi-shield-lock me-2"></i><span class="menu-text">Audit Log</span></a>
+            <a href="{{ url('/bantuan-sosial') }}" class="{{ Request::is('bantuan-sosial*') ? 'active' : '' }}">
+                <i class="bi bi-people me-2"></i><span class="menu-text">Bantuan Sosial</span>
+            </a>
+
+            <a href="#" class="{{ Request::is('arsip-digital*') ? 'active' : '' }}">
+                <i class="bi bi-archive me-2"></i><span class="menu-text">Arsip Digital</span>
+            </a>
+
+            <a href="#" class="{{ Request::is('laporan*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-bar-graph me-2"></i><span class="menu-text">Laporan</span>
+            </a>
+
+            <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Sistem</small>
+            <a href="#" class="{{ Request::is('audit-log*') ? 'active' : '' }}">
+                <i class="bi bi-shield-check me-2"></i><span class="menu-text">Audit Log</span>
+            </a>
         </div>
     </div>
-
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-title">
