@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BantuanSosial;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class BantuanSosialController extends Controller
@@ -27,13 +28,15 @@ class BantuanSosialController extends Controller
             'jumlah_penerima'  => 'required|integer|min:0',
         ]);
 
-        BantuanSosial::create([
+        $bantuan = BantuanSosial::create([
             'nama_bantuan'     => $request->nama_bantuan,
             'instansi_pemberi' => $request->instansi_pemberi,
             'tanggal_bantuan'  => $request->tanggal_bantuan,
             'jumlah_penerima'  => $request->jumlah_penerima,
             'id_user'          => auth()->user()->id_user,
         ]);
+
+        AuditLog::catat($request, 'Tambah data', 'Bantuan Sosial', 'Menambah bantuan ' . $bantuan->nama_bantuan);
 
         return redirect('/bantuan-sosial')->with('success', 'Data Bantuan Sosial berhasil disimpan!');
     }
@@ -62,13 +65,17 @@ class BantuanSosialController extends Controller
             'id_user'          => auth()->user()->id_user,
         ]);
 
+        AuditLog::catat($request, 'Edit data', 'Bantuan Sosial', 'Memperbarui bantuan ' . $bantuan->nama_bantuan);
+
         return redirect('/bantuan-sosial')->with('success', 'Data Bantuan Sosial berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $bantuan = BantuanSosial::where('id_bantuan', $id)->firstOrFail();
+        $namaBantuan = $bantuan->nama_bantuan;
         $bantuan->delete();
+        AuditLog::catat($request, 'Hapus data', 'Bantuan Sosial', 'Menghapus bantuan ' . $namaBantuan);
 
         return redirect('/bantuan-sosial')->with('success', 'Data Bantuan Sosial berhasil dihapus!');
     }

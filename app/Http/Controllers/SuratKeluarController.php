@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SuratKeluar;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class SuratKeluarController extends Controller
@@ -47,7 +48,7 @@ class SuratKeluarController extends Controller
             $file->move(public_path('uploads/surat_keluar'), $namaFile);
         }
 
-        SuratKeluar::create([
+        $suratKeluar = SuratKeluar::create([
             'nomor_surat'         => $request->nomor_surat,
             'tanggal_surat'       => $request->tanggal_surat,
             'tujuan'              => $request->tujuan,
@@ -56,6 +57,8 @@ class SuratKeluarController extends Controller
             'status_persetujuan'  => 'Menunggu',
             'id_user'             => auth()->user()->id_user,
         ]);
+
+        AuditLog::catat($request, 'Tambah data', 'Surat Keluar', 'Menambah surat keluar ' . $suratKeluar->nomor_surat);
 
         return redirect('/surat-keluar')->with('success', 'Data Surat Keluar berhasil disimpan!');
     }
@@ -109,12 +112,13 @@ class SuratKeluarController extends Controller
         }
 
         $suratKeluar->update($dataUpdate);
+        AuditLog::catat($request, 'Edit data', 'Surat Keluar', 'Memperbarui surat keluar ' . $suratKeluar->nomor_surat);
 
         return redirect('/surat-keluar')->with('success', 'Data Surat Keluar berhasil diperbarui!');
     }
 
     // Proses Hapus Data
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
 
@@ -123,7 +127,9 @@ class SuratKeluarController extends Controller
             unlink(public_path('uploads/surat_keluar/' . $suratKeluar->file_surat));
         }
 
+        $nomorSurat = $suratKeluar->nomor_surat;
         $suratKeluar->delete();
+        AuditLog::catat($request, 'Hapus data', 'Surat Keluar', 'Menghapus surat keluar ' . $nomorSurat);
 
         return redirect('/surat-keluar')->with('success', 'Data Surat Keluar berhasil dihapus!');
     }

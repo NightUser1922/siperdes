@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SuratMasuk;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class SuratMasukController extends Controller
@@ -42,7 +43,7 @@ class SuratMasukController extends Controller
         }
 
         // Mapping ke database sesuai acuan
-        SuratMasuk::create([
+        $suratMasuk = SuratMasuk::create([
             'nomor_surat'        => $request->nomor_surat,
             'pengirim'           => $request->pengirim,
             'tanggal_surat'      => $request->tanggal_surat,
@@ -51,6 +52,8 @@ class SuratMasukController extends Controller
             'status_verifikasi'  => 'Menunggu',
             'id_user'            => auth()->user()->id_user,
         ]);
+
+        AuditLog::catat($request, 'Tambah data', 'Surat Masuk', 'Menambah surat masuk ' . $suratMasuk->nomor_surat);
 
         return redirect('/surat-masuk')->with('success', 'Data Surat Masuk berhasil disimpan!');
     }
@@ -100,12 +103,13 @@ class SuratMasukController extends Controller
         }
 
         $suratMasuk->update($dataUpdate);
+        AuditLog::catat($request, 'Edit data', 'Surat Masuk', 'Memperbarui surat masuk ' . $suratMasuk->nomor_surat);
 
         return redirect('/surat-masuk')->with('success', 'Data Surat Masuk berhasil diperbarui!');
     }
 
     // 6. PROSES HAPUS DATA
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $suratMasuk = SuratMasuk::where('id_surat_masuk', $id)->firstOrFail();
 
@@ -114,7 +118,9 @@ class SuratMasukController extends Controller
             unlink(public_path('uploads/surat_masuk/' . $suratMasuk->file_surat));
         }
 
+        $nomorSurat = $suratMasuk->nomor_surat;
         $suratMasuk->delete();
+        AuditLog::catat($request, 'Hapus data', 'Surat Masuk', 'Menghapus surat masuk ' . $nomorSurat);
 
         return redirect('/surat-masuk')->with('success', 'Data Surat Masuk berhasil dihapus!');
     }

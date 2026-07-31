@@ -369,7 +369,7 @@
             </a>
 
             <small class="sidebar-section-label text-uppercase px-3 mt-4 d-block fw-bold">Sistem</small>
-            <a href="#" class="{{ Request::is('audit-log*') ? 'active' : '' }}">
+            <a href="{{ url('/audit-log') }}" class="{{ Request::is('audit-log*') ? 'active' : '' }}">
                 <i class="bi bi-shield-check me-2"></i><span class="menu-text">Audit Log</span>
             </a>
         </div>

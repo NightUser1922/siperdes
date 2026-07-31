@@ -5,6 +5,7 @@ use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\KegiatanDesaController;
 use App\Http\Controllers\BantuanSosialController;
+use App\Http\Controllers\AuditLogController;
 use App\Models\BantuanSosial;
 use App\Models\KegiatanDesa;
 use App\Models\SuratKeluar;
@@ -79,6 +80,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/bantuan-sosial/edit/{id}', [BantuanSosialController::class, 'edit']);
     Route::put('/bantuan-sosial/update/{id}', [BantuanSosialController::class, 'update']);
     Route::delete('/bantuan-sosial/delete/{id}', [BantuanSosialController::class, 'destroy']);
+
+    // ==========================================
+    // ROUTE AUDIT LOG
+    // ==========================================
+    Route::get('/audit-log', [AuditLogController::class, 'index']);
 });
 
 function dashboardData()

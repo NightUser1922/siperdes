@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,6 +35,12 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            AuditLog::catat(
+                $request,
+                'Login',
+                'Authentication',
+                'Login berhasil ke sistem. User Agent: ' . $request->userAgent()
+            );
 
             return redirect($this->dashboardPath(Auth::user()->role));
         }
@@ -44,6 +51,7 @@ class UserController extends Controller
 
     public function logout(Request $request)
     {
+        AuditLog::catat($request, 'Logout', 'Autentikasi', 'Logout dari sistem', Auth::user());
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

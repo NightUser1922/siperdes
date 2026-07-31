@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\KegiatanDesa;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class KegiatanDesaController extends Controller
@@ -27,13 +28,15 @@ class KegiatanDesaController extends Controller
             'keterangan'       => 'required|string',
         ]);
 
-        KegiatanDesa::create([
+        $kegiatan = KegiatanDesa::create([
             'nama_kegiatan'    => $request->nama_kegiatan,
             'tanggal_kegiatan' => $request->tanggal_kegiatan,
             'lokasi'           => $request->lokasi,
             'keterangan'       => $request->keterangan,
             'id_user'          => auth()->user()->id_user,
         ]);
+
+        AuditLog::catat($request, 'Tambah data', 'Kegiatan Desa', 'Menambah kegiatan ' . $kegiatan->nama_kegiatan);
 
         return redirect('/kegiatan-desa')->with('success', 'Data Kegiatan Desa berhasil disimpan!');
     }
@@ -62,13 +65,17 @@ class KegiatanDesaController extends Controller
             'id_user'          => auth()->user()->id_user,
         ]);
 
+        AuditLog::catat($request, 'Edit data', 'Kegiatan Desa', 'Memperbarui kegiatan ' . $kegiatan->nama_kegiatan);
+
         return redirect('/kegiatan-desa')->with('success', 'Data Kegiatan Desa berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $kegiatan = KegiatanDesa::where('id_kegiatan', $id)->firstOrFail();
+        $namaKegiatan = $kegiatan->nama_kegiatan;
         $kegiatan->delete();
+        AuditLog::catat($request, 'Hapus data', 'Kegiatan Desa', 'Menghapus kegiatan ' . $namaKegiatan);
 
         return redirect('/kegiatan-desa')->with('success', 'Data Kegiatan Desa berhasil dihapus!');
     }
