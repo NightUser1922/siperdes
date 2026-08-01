@@ -17,6 +17,10 @@
         body { background-color: var(--app-bg); overflow-x: hidden; color: #1f2a24; }
         .sidebar {
             height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
             background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-bg-dark));
             color: white;
             position: fixed;
@@ -24,6 +28,8 @@
             transition: width 0.25s ease, transform 0.25s ease;
             z-index: 1040;
             box-shadow: 0 16px 40px rgba(15, 61, 35, 0.22);
+
+            overflow: hidden;
         }
         .sidebar-brand {
             min-height: 76px;
@@ -42,7 +48,13 @@
             justify-content: center;
             flex: 0 0 42px;
         }
-        .sidebar-nav { padding: .75rem; }
+        .sidebar-nav {
+            flex: 1;
+            padding: .75rem;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
         .sidebar-section-label {
             color: rgba(220, 252, 231, .72);
             letter-spacing: .08em;
@@ -75,6 +87,18 @@
             font-size: 1.1rem;
             flex: 0 0 1.35rem;
         }
+        .sidebar-nav::-webkit-scrollbar {
+        width: 6px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,.25);
+            border-radius: 20px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+        } 
         .main-content {
             margin-left: var(--sidebar-width);
             padding: 24px;
