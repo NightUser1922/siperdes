@@ -388,7 +388,7 @@
                 <i class="bi bi-archive me-2"></i><span class="menu-text">Arsip Digital</span>
             </a>
 
-            <a href="#" class="{{ Request::is('laporan*') ? 'active' : '' }}">
+            <a href="{{ url('/laporan') }}" class="{{ Request::is('laporan*') ? 'active' : '' }}">
                 <i class="bi bi-file-earmark-bar-graph me-2"></i><span class="menu-text">Laporan</span>
             </a>
 
