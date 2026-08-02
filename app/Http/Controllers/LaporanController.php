@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\BantuanSosial;
 use App\Models\KegiatanDesa;
 use App\Models\SuratKeluar;
@@ -21,6 +22,21 @@ class LaporanController extends Controller
         'bantuan_sosial' => 'Bantuan Sosial',
     ];
 
+    private array $bulanList = [
+        1 => 'Januari',
+        2 => 'Februari',
+        3 => 'Maret',
+        4 => 'April',
+        5 => 'Mei',
+        6 => 'Juni',
+        7 => 'Juli',
+        8 => 'Agustus',
+        9 => 'September',
+        10 => 'Oktober',
+        11 => 'November',
+        12 => 'Desember',
+    ];
+
     public function index(Request $request)
     {
         $this->authorizeAccess();
@@ -29,8 +45,24 @@ class LaporanController extends Controller
         $laporan = $this->paginate($allLaporan, $request);
         $ringkasan = $this->ringkasan($allLaporan);
         $jenisData = $this->jenisData;
+        $bulanList = $this->bulanList;
+        $tahunList = $this->tahunList();
 
-        return view('laporan', compact('laporan', 'ringkasan', 'jenisData', 'filters'));
+        AuditLog::catat($request, 'Melihat laporan', 'Laporan', 'Melihat laporan administrasi. ' . $this->filterSummary($filters));
+
+        return view('laporan', compact('laporan', 'ringkasan', 'jenisData', 'bulanList', 'tahunList', 'filters'));
+    }
+
+    public function print(Request $request)
+    {
+        $this->authorizeAccess();
+        $filters = $this->validatedFilters($request);
+        $laporan = $this->collectLaporan($filters);
+        $ringkasan = $this->ringkasan($laporan);
+
+        AuditLog::catat($request, 'Print laporan', 'Laporan', 'Mencetak laporan administrasi. ' . $this->filterSummary($filters));
+
+        return view('print.laporan', compact('laporan', 'ringkasan', 'filters'));
     }
 
     public function exportPdf(Request $request)
@@ -39,6 +71,8 @@ class LaporanController extends Controller
         $filters = $this->validatedFilters($request);
         $laporan = $this->collectLaporan($filters);
         $ringkasan = $this->ringkasan($laporan);
+
+        AuditLog::catat($request, 'Export PDF', 'Laporan', 'Export PDF laporan administrasi. ' . $this->filterSummary($filters));
 
         return Pdf::loadView('pdf.laporan', compact('laporan', 'ringkasan', 'filters'))
             ->setPaper('a4', 'landscape')
@@ -52,6 +86,8 @@ class LaporanController extends Controller
         $laporan = $this->collectLaporan($filters);
         $ringkasan = $this->ringkasan($laporan);
         $filename = 'laporan-siperdes-' . now()->format('Ymd-His') . '.xls';
+
+        AuditLog::catat($request, 'Export Excel', 'Laporan', 'Export Excel laporan administrasi. ' . $this->filterSummary($filters));
 
         return response()
             ->view('exports.laporan-excel', compact('laporan', 'ringkasan', 'filters'))
@@ -71,12 +107,16 @@ class LaporanController extends Controller
         $validated = $request->validate([
             'tanggal_mulai' => 'nullable|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+            'bulan' => 'nullable|integer|min:1|max:12',
+            'tahun' => 'nullable|integer|min:2000|max:2100',
             'jenis_data' => 'nullable|in:semua,surat_masuk,surat_keluar,kegiatan_desa,bantuan_sosial',
         ]);
 
         return [
             'tanggal_mulai' => $validated['tanggal_mulai'] ?? null,
             'tanggal_selesai' => $validated['tanggal_selesai'] ?? null,
+            'bulan' => isset($validated['bulan']) ? (int) $validated['bulan'] : null,
+            'tahun' => isset($validated['tahun']) ? (int) $validated['tahun'] : null,
             'jenis_data' => $validated['jenis_data'] ?? 'semua',
         ];
     }
@@ -187,6 +227,14 @@ class LaporanController extends Controller
             $query->whereDate($column, '<=', $filters['tanggal_selesai']);
         }
 
+        if ($filters['bulan']) {
+            $query->whereMonth($column, $filters['bulan']);
+        }
+
+        if ($filters['tahun']) {
+            $query->whereYear($column, $filters['tahun']);
+        }
+
         return $query;
     }
 
@@ -211,5 +259,32 @@ class LaporanController extends Controller
             'kegiatan_desa' => $items->where('jenis', 'Kegiatan Desa')->count(),
             'bantuan_sosial' => $items->where('jenis', 'Bantuan Sosial')->count(),
         ];
+    }
+
+    private function tahunList(): array
+    {
+        $tahunSekarang = (int) now()->format('Y');
+
+        return range($tahunSekarang, $tahunSekarang - 6);
+    }
+
+    private function filterSummary(array $filters): string
+    {
+        $parts = [];
+        $parts[] = 'Jenis: ' . ($this->jenisData[$filters['jenis_data']] ?? 'Semua');
+
+        if ($filters['tanggal_mulai'] || $filters['tanggal_selesai']) {
+            $parts[] = 'Periode: ' . ($filters['tanggal_mulai'] ?: 'awal') . ' s/d ' . ($filters['tanggal_selesai'] ?: 'akhir');
+        }
+
+        if ($filters['bulan']) {
+            $parts[] = 'Bulan: ' . ($this->bulanList[$filters['bulan']] ?? $filters['bulan']);
+        }
+
+        if ($filters['tahun']) {
+            $parts[] = 'Tahun: ' . $filters['tahun'];
+        }
+
+        return implode(', ', $parts);
     }
 }

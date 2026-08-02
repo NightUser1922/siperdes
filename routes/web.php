@@ -104,6 +104,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // ROUTE LAPORAN
     // ==========================================
     Route::get('/laporan', [LaporanController::class, 'index']);
+    Route::get('/laporan/print', [LaporanController::class, 'print']);
     Route::get('/laporan/export/pdf', [LaporanController::class, 'exportPdf']);
     Route::get('/laporan/export/excel', [LaporanController::class, 'exportExcel']);
     // ==========================================

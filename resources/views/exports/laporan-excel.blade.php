@@ -8,7 +8,16 @@
     <table>
         <tr><th colspan="7">LAPORAN SIPERDES</th></tr>
         <tr><td colspan="7">Pemerintah Desa Amawang Kanan</td></tr>
+        <tr><td colspan="7">Jenis Data: {{ ucwords(str_replace('_', ' ', $filters['jenis_data'] ?? 'semua')) }}</td></tr>
+        <tr><td colspan="7">Periode: {{ $filters['tanggal_mulai'] ?: 'Awal data' }} s/d {{ $filters['tanggal_selesai'] ?: 'Akhir data' }}</td></tr>
+        <tr><td colspan="7">Bulan/Tahun: {{ $filters['bulan'] ?: 'Semua Bulan' }} / {{ $filters['tahun'] ?: 'Semua Tahun' }}</td></tr>
         <tr><td colspan="7">Total Data: {{ $ringkasan['total'] }}</td></tr>
+        <tr>
+            <td>Surat Masuk: {{ $ringkasan['surat_masuk'] }}</td>
+            <td>Surat Keluar: {{ $ringkasan['surat_keluar'] }}</td>
+            <td>Kegiatan Desa: {{ $ringkasan['kegiatan_desa'] }}</td>
+            <td>Bantuan Sosial: {{ $ringkasan['bantuan_sosial'] }}</td>
+        </tr>
     </table>
     <table border="1">
         <thead>

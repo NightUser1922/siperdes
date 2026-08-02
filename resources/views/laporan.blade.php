@@ -30,6 +30,11 @@
         </div>
     @endif
 
+    @php
+        $exportQuery = request()->except('page');
+        $exportSuffix = count($exportQuery) ? '?' . http_build_query($exportQuery) : '';
+    @endphp
+
     <div class="card module-hero shadow-sm border-0 mb-4">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
@@ -38,17 +43,13 @@
                     <div>
                         <span class="badge text-bg-success mb-2">Rekapitulasi</span>
                         <h4 class="fw-bold text-success mb-1">Laporan SIPERDES</h4>
-                        <p class="text-muted mb-0">Tampilkan rekap Surat Masuk, Surat Keluar, Kegiatan Desa, dan Bantuan Sosial berdasarkan periode.</p>
+                        <p class="text-muted mb-0">Rekap seluruh data administrasi desa berdasarkan periode, bulan, tahun, dan jenis data.</p>
                     </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    @php
-                        $exportQuery = request()->except('page');
-                        $exportSuffix = count($exportQuery) ? '?' . http_build_query($exportQuery) : '';
-                    @endphp
-                    <button type="button" class="btn btn-light border rounded-pill px-3" onclick="window.print()">
+                    <a href="{{ url('/laporan/print') . $exportSuffix }}" target="_blank" class="btn btn-light border rounded-pill px-3">
                         <i class="bi bi-printer me-1"></i>Print
-                    </button>
+                    </a>
                     <a href="{{ url('/laporan/export/pdf') . $exportSuffix }}" class="btn btn-danger rounded-pill px-3">
                         <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
                     </a>
@@ -109,16 +110,48 @@
 
     <div class="card module-card shadow-sm border-0 mb-4">
         <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Filter Laporan</h5>
+                    <p class="text-muted small mb-0">Gunakan periode tanggal atau kombinasi bulan/tahun untuk membatasi data.</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2 align-items-start">
+                    <span class="badge text-bg-success">Total {{ $ringkasan['total'] }}</span>
+                    <span class="badge text-bg-primary">Masuk {{ $ringkasan['surat_masuk'] }}</span>
+                    <span class="badge text-bg-success">Keluar {{ $ringkasan['surat_keluar'] }}</span>
+                    <span class="badge text-bg-warning">Kegiatan {{ $ringkasan['kegiatan_desa'] }}</span>
+                    <span class="badge text-bg-info">Bantuan {{ $ringkasan['bantuan_sosial'] }}</span>
+                </div>
+            </div>
+
             <form action="{{ url('/laporan') }}" method="GET" class="row g-3 align-items-end">
-                <div class="col-md-6 col-xl-3">
+                <div class="col-md-6 col-xl-2">
                     <label for="tanggal_mulai" class="form-label fw-semibold">Tanggal Mulai</label>
                     <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" value="{{ old('tanggal_mulai', $filters['tanggal_mulai']) }}">
                 </div>
-                <div class="col-md-6 col-xl-3">
+                <div class="col-md-6 col-xl-2">
                     <label for="tanggal_selesai" class="form-label fw-semibold">Tanggal Selesai</label>
                     <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" value="{{ old('tanggal_selesai', $filters['tanggal_selesai']) }}">
                 </div>
-                <div class="col-md-6 col-xl-3">
+                <div class="col-md-6 col-xl-2">
+                    <label for="bulan" class="form-label fw-semibold">Bulan</label>
+                    <select class="form-select" id="bulan" name="bulan">
+                        <option value="">Semua Bulan</option>
+                        @foreach($bulanList as $value => $label)
+                            <option value="{{ $value }}" @selected((int) $filters['bulan'] === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-6 col-xl-2">
+                    <label for="tahun" class="form-label fw-semibold">Tahun</label>
+                    <select class="form-select" id="tahun" name="tahun">
+                        <option value="">Semua Tahun</option>
+                        @foreach($tahunList as $tahun)
+                            <option value="{{ $tahun }}" @selected((int) $filters['tahun'] === $tahun)>{{ $tahun }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-6 col-xl-2">
                     <label for="jenis_data" class="form-label fw-semibold">Jenis Data</label>
                     <select class="form-select" id="jenis_data" name="jenis_data">
                         @foreach($jenisData as $value => $label)
@@ -126,10 +159,10 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="d-flex flex-column flex-sm-row gap-2">
-                        <button type="submit" class="btn btn-success rounded-pill px-4 flex-fill"><i class="bi bi-funnel me-1"></i>Tampilkan</button>
-                        <a href="{{ url('/laporan') }}" class="btn btn-light border rounded-pill px-4 flex-fill"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filter</a>
+                <div class="col-md-6 col-xl-2">
+                    <div class="d-flex flex-column gap-2">
+                        <button type="submit" class="btn btn-success rounded-pill px-4"><i class="bi bi-funnel me-1"></i>Tampilkan</button>
+                        <a href="{{ url('/laporan') }}" class="btn btn-light border rounded-pill px-4"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</a>
                     </div>
                 </div>
             </form>

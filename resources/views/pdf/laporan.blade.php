@@ -8,12 +8,13 @@
         .header { text-align: center; border-bottom: 2px solid #111827; padding-bottom: 12px; margin-bottom: 16px; }
         .header h2 { margin: 0; font-size: 18px; }
         .header p { margin: 4px 0 0; }
+        .meta { margin-bottom: 10px; line-height: 1.6; }
         .summary { margin-bottom: 14px; }
-        .summary span { display: inline-block; margin-right: 18px; }
+        .summary span { display: inline-block; margin: 0 10px 6px 0; padding: 4px 8px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #14532d; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #d1d5db; padding: 6px; vertical-align: top; }
         th { background: #dcfce7; color: #14532d; text-align: left; }
-        .meta { margin-bottom: 10px; }
+        .empty { text-align: center; color: #6b7280; }
     </style>
 </head>
 <body>
@@ -23,10 +24,13 @@
     </div>
 
     <div class="meta">
-        Periode:
+        <strong>Jenis Data:</strong> {{ ucwords(str_replace('_', ' ', $filters['jenis_data'] ?? 'semua')) }}<br>
+        <strong>Periode Tanggal:</strong>
         {{ $filters['tanggal_mulai'] ? \Carbon\Carbon::parse($filters['tanggal_mulai'])->format('d-m-Y') : 'Awal data' }}
         s/d
-        {{ $filters['tanggal_selesai'] ? \Carbon\Carbon::parse($filters['tanggal_selesai'])->format('d-m-Y') : 'Akhir data' }}
+        {{ $filters['tanggal_selesai'] ? \Carbon\Carbon::parse($filters['tanggal_selesai'])->format('d-m-Y') : 'Akhir data' }}<br>
+        <strong>Bulan/Tahun:</strong>
+        {{ $filters['bulan'] ? DateTime::createFromFormat('!m', $filters['bulan'])->format('F') : 'Semua Bulan' }} / {{ $filters['tahun'] ?: 'Semua Tahun' }}
     </div>
 
     <div class="summary">
@@ -62,7 +66,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7">Tidak ada data laporan.</td>
+                    <td colspan="7" class="empty">Tidak ada data laporan.</td>
                 </tr>
             @endforelse
         </tbody>
