@@ -5,9 +5,11 @@ use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\KegiatanDesaController;
 use App\Http\Controllers\BantuanSosialController;
+use App\Http\Controllers\ArsipDigitalController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\TemplateSuratController;
+use App\Models\ArsipDigital;
 use App\Models\BantuanSosial;
 use App\Models\KegiatanDesa;
 use App\Models\SuratKeluar;
@@ -101,6 +103,17 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
 
     // ==========================================
+    // ROUTE ARSIP DIGITAL
+    // ==========================================
+    Route::get('/arsip-digital', [ArsipDigitalController::class, 'index']);
+    Route::get('/arsip-digital/create', [ArsipDigitalController::class, 'create']);
+    Route::post('/arsip-digital/store', [ArsipDigitalController::class, 'store']);
+    Route::get('/arsip-digital/edit/{id}', [ArsipDigitalController::class, 'edit']);
+    Route::put('/arsip-digital/update/{id}', [ArsipDigitalController::class, 'update']);
+    Route::get('/arsip-digital/preview/{id}', [ArsipDigitalController::class, 'preview']);
+    Route::get('/arsip-digital/download/{id}', [ArsipDigitalController::class, 'download']);
+    Route::delete('/arsip-digital/delete/{id}', [ArsipDigitalController::class, 'destroy']);
+    // ==========================================
     // ROUTE LAPORAN
     // ==========================================
     Route::get('/laporan', [LaporanController::class, 'index']);
@@ -139,11 +152,17 @@ function dashboardData()
         $totalBantuan = 0;
     }
 
+    try {
+        $totalArsip = ArsipDigital::count();
+    } catch (\Exception $e) {
+        $totalArsip = 0;
+    }
 
     return view('dashboard', compact(
         'totalMasuk',
         'totalKeluar',
         'totalKegiatan',
-        'totalBantuan'
+        'totalBantuan',
+        'totalArsip'
     ));
 }

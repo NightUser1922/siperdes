@@ -8,7 +8,8 @@
     $totalKeluar = $totalKeluar ?? 0;
     $totalKegiatan = $totalKegiatan ?? 0;
     $totalBantuan = $totalBantuan ?? 0;
-    $totalAdministrasi = $totalMasuk + $totalKeluar + $totalKegiatan + $totalBantuan;
+    $totalArsip = $totalArsip ?? 0;
+    $totalAdministrasi = $totalMasuk + $totalKeluar + $totalKegiatan + $totalBantuan + $totalArsip;
 
     $dashboardCards = [
         [
@@ -43,6 +44,14 @@
             'color' => 'danger',
             'caption' => 'Data bantuan tersedia',
         ],
+        [
+            'label' => 'Arsip Digital',
+            'count' => $totalArsip,
+            'url' => url('/arsip-digital'),
+            'icon' => 'bi-archive',
+            'color' => 'warning',
+            'caption' => 'File arsip tersimpan',
+        ],
     ];
 
     $quickActions = [
@@ -69,6 +78,12 @@
             'url' => url('/bantuan-sosial/create'),
             'icon' => 'bi-person-plus',
             'color' => 'danger',
+        ],
+        [
+            'label' => 'Upload Arsip',
+            'url' => url('/arsip-digital/create'),
+            'icon' => 'bi-cloud-upload',
+            'color' => 'warning',
         ],
     ];
 @endphp
@@ -210,7 +225,7 @@
                         <div class="col-6">
                             <div class="user-info-box h-100">
                                 <small class="text-muted d-block">Modul Aktif</small>
-                                <strong>4 Modul</strong>
+                                <strong>5 Modul</strong>
                             </div>
                         </div>
                     </div>

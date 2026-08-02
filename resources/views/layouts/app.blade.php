@@ -388,7 +388,7 @@
                 <i class="bi bi-people me-2"></i><span class="menu-text">Bantuan Sosial</span>
             </a>
 
-            <a href="#" class="{{ Request::is('arsip-digital*') ? 'active' : '' }}">
+            <a href="{{ url('/arsip-digital') }}" class="{{ Request::is('arsip-digital*') ? 'active' : '' }}">
                 <i class="bi bi-archive me-2"></i><span class="menu-text">Arsip Digital</span>
             </a>
 
