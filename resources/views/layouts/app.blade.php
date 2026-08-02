@@ -376,6 +376,10 @@
                 <i class="bi bi-send me-2"></i><span class="menu-text">Surat Keluar</span>
             </a>
 
+            <a href="{{ url('/template-surat') }}" class="{{ Request::is('template-surat*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-richtext me-2"></i><span class="menu-text">Template Surat</span>
+            </a>
+
             <a href="{{ url('/kegiatan-desa') }}" class="{{ Request::is('kegiatan-desa*') ? 'active' : '' }}">
                 <i class="bi bi-calendar-event me-2"></i><span class="menu-text">Kegiatan Desa</span>
             </a>

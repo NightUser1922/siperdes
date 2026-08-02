@@ -6,20 +6,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class SuratKeluar extends Model
 {
-    // Menunjuk ke tabel yang benar di database
     protected $table = 'tb_surat_keluar';
-    
-    // Primary key wajib disesuaikan dengan HeidiSQL
+
     protected $primaryKey = 'id_surat_keluar';
-    
-    // Kolom-kolom yang diizinkan untuk diisi (wajib sama persis dengan nama kolom database)
+
     protected $fillable = [
+        'id_template',
         'nomor_surat',
         'tanggal_surat',
         'tujuan',
         'perihal',
         'file_surat',
         'status_persetujuan',
+        'data_template',
+        'metode_pembuatan',
         'id_user'
     ];
+
+    protected $casts = [
+        'tanggal_surat' => 'date',
+        'data_template' => 'array',
+    ];
+
+    public function templateSurat()
+    {
+        return $this->belongsTo(TemplateSurat::class, 'id_template', 'id_template');
+    }
 }

@@ -32,12 +32,17 @@
                     <div>
                         <span class="badge text-bg-success mb-2">Menu Utama</span>
                         <h4 class="fw-bold text-success mb-1">Arsip Surat Keluar</h4>
-                        <p class="text-muted mb-0">Kelola dan pantau dokumen surat keluar yang diterbitkan oleh desa.</p>
+                        <p class="text-muted mb-0">Kelola surat keluar dari template DOCX atau upload dokumen manual.</p>
                     </div>
                 </div>
-                <a href="/surat-keluar/create" class="btn btn-success rounded-pill px-4">
-                    <i class="bi bi-plus-circle me-2"></i>Tambah Surat Keluar
-                </a>
+                <div class="d-flex flex-column flex-sm-row gap-2">
+                    <a href="{{ url('/template-surat') }}" class="btn btn-light border rounded-pill px-4">
+                        <i class="bi bi-file-earmark-richtext me-2"></i>Template Surat
+                    </a>
+                    <a href="{{ url('/surat-keluar/create') }}" class="btn btn-success rounded-pill px-4">
+                        <i class="bi bi-plus-circle me-2"></i>Tambah Surat Keluar
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -52,7 +57,7 @@
                 <div class="module-search">
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="search" class="form-control" id="suratKeluarSearch" placeholder="Cari nomor, tujuan, perihal...">
+                        <input type="search" class="form-control" id="suratKeluarSearch" placeholder="Cari nomor, tujuan, perihal, template...">
                     </div>
                 </div>
             </div>
@@ -66,19 +71,34 @@
                             <th>Tanggal Surat</th>
                             <th>Tujuan</th>
                             <th>Perihal</th>
+                            <th>Metode</th>
                             <th>Status</th>
                             <th>Dokumen</th>
                         </tr>
                     </thead>
                     <tbody id="suratKeluarTableBody" data-admin-table data-search-input="#suratKeluarSearch" data-pagination="#suratKeluarPagination" data-table-info="#suratKeluarTableInfo" data-empty-row="#suratKeluarSearchEmpty" data-item-label="data surat keluar">
                         @forelse($suratKeluar as $surat)
-                            <tr data-search-row="{{ strtolower($surat->nomor_surat.' '.$surat->tujuan.' '.$surat->perihal.' '.($surat->status_persetujuan ?? 'Menunggu')) }}">
+                            <tr data-search-row="{{ strtolower($surat->nomor_surat.' '.$surat->tujuan.' '.$surat->perihal.' '.($surat->status_persetujuan ?? 'Menunggu').' '.($surat->metode_pembuatan ?? 'Upload').' '.optional($surat->templateSurat)->nama_template) }}">
                                 <td>
-                                    <div class="d-inline-flex gap-1">
-                                        <a href="/surat-keluar/edit/{{ $surat->id_surat_keluar }}" class="btn btn-warning btn-sm action-btn" title="Edit">
+                                    <div class="d-inline-flex flex-wrap gap-1">
+                                        <a href="{{ url('/surat-keluar/edit/' . $surat->id_surat_keluar) }}" class="btn btn-warning btn-sm action-btn" title="Edit">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <form action="/surat-keluar/delete/{{ $surat->id_surat_keluar }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus arsip surat keluar {{ $surat->nomor_surat }}?');">
+                                        <a href="{{ url('/surat-keluar/' . $surat->id_surat_keluar . '/preview') }}" target="_blank" class="btn btn-info btn-sm action-btn" title="Preview PDF">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ url('/surat-keluar/' . $surat->id_surat_keluar . '/download') }}" class="btn btn-success btn-sm action-btn" title="Download PDF">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        @if($surat->id_template)
+                                            <form action="{{ url('/surat-keluar/' . $surat->id_surat_keluar . '/generate') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-secondary btn-sm action-btn" title="Generate PDF">
+                                                    <i class="bi bi-arrow-repeat"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        <form action="{{ url('/surat-keluar/delete/' . $surat->id_surat_keluar) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus arsip surat keluar {{ $surat->nomor_surat }}?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
@@ -92,6 +112,14 @@
                                 <td>{{ $surat->tujuan }}</td>
                                 <td class="text-start">{{ $surat->perihal }}</td>
                                 <td>
+                                    <span class="badge status-badge {{ ($surat->metode_pembuatan ?? 'Upload') === 'Template' ? 'text-bg-primary' : 'text-bg-secondary' }}">
+                                        {{ $surat->metode_pembuatan ?? 'Upload' }}
+                                    </span>
+                                    @if($surat->templateSurat)
+                                        <div class="small text-muted mt-1">{{ $surat->templateSurat->nama_template }}</div>
+                                    @endif
+                                </td>
+                                <td>
                                     @php
                                         $statusClass = match($surat->status_persetujuan ?? 'Menunggu') {
                                             'Disetujui' => 'text-bg-success',
@@ -103,9 +131,7 @@
                                 </td>
                                 <td>
                                     @if($surat->file_surat)
-                                        <a href="{{ asset('uploads/surat_keluar/'.$surat->file_surat) }}" target="_blank" class="btn btn-info btn-sm file-link-btn">
-                                            <i class="bi bi-eye me-1"></i>Lihat
-                                        </a>
+                                        <span class="badge text-bg-light text-dark border">{{ $surat->file_surat }}</span>
                                     @else
                                         <span class="text-muted small">Tidak ada file</span>
                                     @endif
@@ -113,17 +139,17 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7">
+                                <td colspan="8">
                                     <div class="empty-state">
                                         <i class="bi bi-send d-block mb-2"></i>
                                         <strong>Belum ada data surat keluar</strong>
-                                        <p class="mb-0 small">Silakan tambah data baru untuk mulai mengarsipkan surat keluar.</p>
+                                        <p class="mb-0 small">Silakan tambah data baru dari template atau upload file manual.</p>
                                     </div>
                                 </td>
                             </tr>
                         @endforelse
                         <tr id="suratKeluarSearchEmpty" class="d-none">
-                            <td colspan="7">
+                            <td colspan="8">
                                 <div class="empty-state">
                                     <i class="bi bi-search d-block mb-2"></i>
                                     <strong>Data tidak ditemukan</strong>

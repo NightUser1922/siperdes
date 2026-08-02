@@ -7,6 +7,7 @@ use App\Http\Controllers\KegiatanDesaController;
 use App\Http\Controllers\BantuanSosialController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\TemplateSuratController;
 use App\Models\BantuanSosial;
 use App\Models\KegiatanDesa;
 use App\Models\SuratKeluar;
@@ -53,13 +54,29 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::delete('/surat-masuk/delete/{id}', [SuratMasukController::class, 'destroy']);
 
     // ==========================================
+    // ROUTE TEMPLATE SURAT
+    // ==========================================
+    Route::get('/template-surat', [TemplateSuratController::class, 'index']);
+    Route::get('/template-surat/create', [TemplateSuratController::class, 'create']);
+    Route::post('/template-surat/store', [TemplateSuratController::class, 'store']);
+    Route::get('/template-surat/edit/{id}', [TemplateSuratController::class, 'edit']);
+    Route::put('/template-surat/update/{id}', [TemplateSuratController::class, 'update']);
+    Route::get('/template-surat/download/{id}', [TemplateSuratController::class, 'download']);
+    Route::delete('/template-surat/delete/{id}', [TemplateSuratController::class, 'destroy']);
+
+    // ==========================================
     // ROUTE SURAT KELUAR
     // ==========================================
     Route::get('/surat-keluar', [SuratKeluarController::class, 'index']);
     Route::get('/surat-keluar/create', [SuratKeluarController::class, 'create']);
     Route::post('/surat-keluar/store', [SuratKeluarController::class, 'store']);
+    Route::post('/surat-keluar/preview-template', [SuratKeluarController::class, 'previewTemplate']);
+    Route::post('/surat-keluar/download-template', [SuratKeluarController::class, 'downloadTemplate']);
     Route::get('/surat-keluar/edit/{id}', [SuratKeluarController::class, 'edit']);
     Route::put('/surat-keluar/update/{id}', [SuratKeluarController::class, 'update']);
+    Route::get('/surat-keluar/{id}/preview', [SuratKeluarController::class, 'preview']);
+    Route::get('/surat-keluar/{id}/download', [SuratKeluarController::class, 'download']);
+    Route::post('/surat-keluar/{id}/generate', [SuratKeluarController::class, 'generate']);
     Route::delete('/surat-keluar/delete/{id}', [SuratKeluarController::class, 'destroy']);
 
     // ==========================================
