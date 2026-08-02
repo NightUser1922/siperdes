@@ -162,7 +162,7 @@
 
             @if($arsipDigital->hasPages())
                 <div class="d-flex justify-content-end mt-3">
-                    {{ $arsipDigital->links() }}
+                    {{ $arsipDigital->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </div>
