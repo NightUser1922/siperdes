@@ -7,6 +7,7 @@ use App\Http\Controllers\KegiatanDesaController;
 use App\Http\Controllers\BantuanSosialController;
 use App\Http\Controllers\ArsipDigitalController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\GoogleDriveOAuthController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\TemplateSuratController;
 use App\Models\ArsipDigital;
@@ -105,6 +106,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // ==========================================
     // ROUTE ARSIP DIGITAL
     // ==========================================
+    Route::get('/google-drive/connect', [GoogleDriveOAuthController::class, 'connect']);
+    Route::get('/google-drive/callback', [GoogleDriveOAuthController::class, 'callback']);
     Route::get('/arsip-digital', [ArsipDigitalController::class, 'index']);
     Route::get('/arsip-digital/create', [ArsipDigitalController::class, 'create']);
     Route::post('/arsip-digital/store', [ArsipDigitalController::class, 'store']);

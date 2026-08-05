@@ -40,9 +40,16 @@
                         <p class="text-muted mb-0">Kelola arsip private SIPERDES yang tersimpan di Google Drive melalui Laravel.</p>
                     </div>
                 </div>
-                <a href="{{ url('/arsip-digital/create') }}" class="btn btn-success rounded-pill px-4">
-                    <i class="bi bi-cloud-upload me-2"></i>Upload Arsip
-                </a>
+                <div class="d-flex flex-wrap gap-2">
+                    @if(Auth::check() && Auth::user()->role === 'Admin')
+                        <a href="{{ url('/google-drive/connect') }}" class="btn btn-outline-success rounded-pill px-4">
+                            <i class="bi bi-google me-2"></i>Hubungkan Google Drive
+                        </a>
+                    @endif
+                    <a href="{{ url('/arsip-digital/create') }}" class="btn btn-success rounded-pill px-4">
+                        <i class="bi bi-cloud-upload me-2"></i>Upload Arsip
+                    </a>
+                </div>
             </div>
         </div>
     </div>
