@@ -10,6 +10,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\GoogleDriveOAuthController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\TemplateSuratController;
+use App\Http\Controllers\DashboardController;
 use App\Models\ArsipDigital;
 use App\Models\BantuanSosial;
 use App\Models\KegiatanDesa;
@@ -22,29 +23,9 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout']);
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        if (auth()->user()->role === 'Kepala Desa') {
-            return redirect('/kades/dashboard');
-        }
 
-        if (auth()->user()->role !== 'Admin') {
-            abort(403);
-        }
-
-        return dashboardData();
-    });
-
-    Route::get('/kades/dashboard', function () {
-        if (auth()->user()->role === 'Admin') {
-            return redirect('/admin/dashboard');
-        }
-
-        if (auth()->user()->role !== 'Kepala Desa') {
-            abort(403);
-        }
-
-        return dashboardData();
-    });
+    Route::get('/admin/dashboard', [DashboardController::class, 'admin']);
+    Route::get('/kades/dashboard', [DashboardController::class, 'kades']);
 
     // ==========================================
     // ROUTE SURAT MASUK
@@ -129,57 +110,3 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/audit-log', [AuditLogController::class, 'index']);
 });
 
-function dashboardData()
-{
-    try {
-        $totalMasuk = SuratMasuk::count();
-    } catch (\Exception $e) {
-        $totalMasuk = 0;
-    }
-
-    try {
-        $totalKeluar = SuratKeluar::count();
-    } catch (\Exception $e) {
-        $totalKeluar = 0;
-    }
-
-    try {
-        $totalKegiatan = KegiatanDesa::count();
-    } catch (\Exception $e) {
-        $totalKegiatan = 0;
-    }
-
-    try {
-        $totalBantuan = BantuanSosial::count();
-    } catch (\Exception $e) {
-        $totalBantuan = 0;
-    }
-
-    try {
-        $totalArsip = ArsipDigital::count();
-    } catch (\Exception $e) {
-        $totalArsip = 0;
-    }
-
-    try {
-        $pendingVerifikasiMasuk = SuratMasuk::where('status_verifikasi', 'Menunggu')->count();
-    } catch (\Exception $e) {
-        $pendingVerifikasiMasuk = 0;
-    }
-
-    try {
-        $pendingPersetujuanKeluar = SuratKeluar::where('status_persetujuan', 'Menunggu')->count();
-    } catch (\Exception $e) {
-        $pendingPersetujuanKeluar = 0;
-    }
-
-    return view('dashboard', compact(
-        'totalMasuk',
-        'totalKeluar',
-        'totalKegiatan',
-        'totalBantuan',
-        'totalArsip',
-        'pendingVerifikasiMasuk',
-        'pendingPersetujuanKeluar'
-    ));
-}

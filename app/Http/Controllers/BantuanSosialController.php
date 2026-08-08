@@ -16,11 +16,13 @@ class BantuanSosialController extends Controller
 
     public function create()
     {
+        $this->authorizeAdmin();
         return view('bantuan-sosial-create');
     }
 
     public function store(Request $request)
     {
+        $this->authorizeAdmin();
         $request->validate([
             'nama_bantuan'     => 'required|string|max:100',
             'instansi_pemberi' => 'required|string|max:100',
@@ -43,12 +45,14 @@ class BantuanSosialController extends Controller
 
     public function edit($id)
     {
+        $this->authorizeAdmin();
         $bantuan = BantuanSosial::where('id_bantuan', $id)->firstOrFail();
         return view('bantuan-sosial-edit', compact('bantuan'));
     }
 
     public function update(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $request->validate([
             'nama_bantuan'     => 'required|string|max:100',
             'instansi_pemberi' => 'required|string|max:100',
@@ -72,6 +76,7 @@ class BantuanSosialController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $bantuan = BantuanSosial::where('id_bantuan', $id)->firstOrFail();
         $namaBantuan = $bantuan->nama_bantuan;
         $bantuan->delete();

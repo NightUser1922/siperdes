@@ -9,7 +9,10 @@
     $totalKegiatan = $totalKegiatan ?? 0;
     $totalBantuan = $totalBantuan ?? 0;
     $totalArsip = $totalArsip ?? 0;
-    $totalAdministrasi = $totalMasuk + $totalKeluar + $totalKegiatan + $totalBantuan + $totalArsip;
+
+    // Normalize user info once and reuse in the template
+    $userRole = Auth::user()->role ?? 'Pengguna';
+    $userName = Auth::user()->nama ?? Auth::user()->username ?? 'Pengguna';
 
     $dashboardCards = [
         [
@@ -54,40 +57,102 @@
         ],
     ];
 
-    $quickActions = [
-        [
-            'label' => 'Tambah Surat Masuk',
-            'url' => url('/surat-masuk/create'),
-            'icon' => 'bi-file-earmark-plus',
-            'color' => 'success',
-        ],
-        [
-            'label' => 'Tambah Surat Keluar',
-            'url' => url('/surat-keluar/create'),
-            'icon' => 'bi-send-plus',
-            'color' => 'primary',
-        ],
-        [
-            'label' => 'Tambah Kegiatan',
-            'url' => url('/kegiatan-desa/create'),
-            'icon' => 'bi-calendar-plus',
-            'color' => 'info',
-        ],
-        [
-            'label' => 'Tambah Bantuan',
-            'url' => url('/bantuan-sosial/create'),
-            'icon' => 'bi-person-plus',
-            'color' => 'danger',
-        ],
-        [
-            'label' => 'Upload Arsip',
-            'url' => url('/arsip-digital/create'),
-            'icon' => 'bi-cloud-upload',
-            'color' => 'warning',
-        ],
-    ];
+    if ($userRole === 'Admin') {
+        $quickActions = [
+            [
+                'label' => 'Tambah Surat Masuk',
+                'url' => url('/surat-masuk/create'),
+                'icon' => 'bi-file-earmark-plus',
+                'color' => 'success',
+            ],
+            [
+                'label' => 'Tambah Surat Keluar',
+                'url' => url('/surat-keluar/create'),
+                'icon' => 'bi-send-plus',
+                'color' => 'primary',
+            ],
+            [
+                'label' => 'Tambah Kegiatan',
+                'url' => url('/kegiatan-desa/create'),
+                'icon' => 'bi-calendar-plus',
+                'color' => 'info',
+            ],
+            [
+                'label' => 'Tambah Bantuan',
+                'url' => url('/bantuan-sosial/create'),
+                'icon' => 'bi-person-plus',
+                'color' => 'danger',
+            ],
+            [
+                'label' => 'Upload Arsip',
+                'url' => url('/arsip-digital/create'),
+                'icon' => 'bi-cloud-upload',
+                'color' => 'warning',
+            ],
+        ];
+    } else {
+        $quickActions = [
+            [
+                'label' => 'Lihat Surat Masuk',
+                'url' => url('/surat-masuk'),
+                'icon' => 'bi-inbox',
+                'color' => 'success',
+            ],
+            [
+                'label' => 'Lihat Surat Keluar',
+                'url' => url('/surat-keluar'),
+                'icon' => 'bi-send',
+                'color' => 'primary',
+            ],
+            [
+                'label' => 'Lihat Kegiatan Desa',
+                'url' => url('/kegiatan-desa'),
+                'icon' => 'bi-calendar-event',
+                'color' => 'info',
+            ],
+            [
+                'label' => 'Lihat Bantuan Sosial',
+                'url' => url('/bantuan-sosial'),
+                'icon' => 'bi-people',
+                'color' => 'danger',
+            ],
+            [
+                'label' => 'Lihat Arsip Digital',
+                'url' => url('/arsip-digital'),
+                'icon' => 'bi-archive',
+                'color' => 'warning',
+            ],
+        ];
+    }
 
-    $userRole = Auth::user()->role ?? 'Pengguna';
+    $trendLabels = $trendLabels ?? [];
+    $kegiatanTrend = $kegiatanTrend ?? [];
+    $bantuanTrend = $bantuanTrend ?? [];
+    $trendMax = $trendMax ?? 1;
+    $kemajuanKegiatanBulanIni = $kemajuanKegiatanBulanIni ?? 0;
+    $kemajuanBantuanBulanIni = $kemajuanBantuanBulanIni ?? 0;
+    $kemajuanKegiatanTotal = $kemajuanKegiatanTotal ?? 0;
+    $kemajuanBantuanTotal = $kemajuanBantuanTotal ?? 0;
+
+    // Ensure pending counters exist when the view is rendered independently
+    $pendingVerifikasiMasuk = $pendingVerifikasiMasuk ?? 0;
+    $pendingPersetujuanKeluar = $pendingPersetujuanKeluar ?? 0;
+
+    // Derive total administrasi from the cards array so it stays consistent
+    $totalAdministrasi = array_sum(array_column($dashboardCards, 'count'));
+
+    $activeModuleCount = count($dashboardCards);
+
+    $dashboardTitle = $userRole === 'Kepala Desa'
+        ? 'Ringkasan Monitoring Desa'
+        : 'Ringkasan Administrasi Desa';
+    $dashboardDescription = $userRole === 'Kepala Desa'
+        ? 'Pantau status administrasi desa dan perkembangan kegiatan tanpa melakukan operasi CRUD administratif.'
+        : 'Pantau jumlah data terbaru dan buka modul administrasi desa dari satu halaman utama.';
+    $quickActionTitle = $userRole === 'Kepala Desa' ? 'Akses Cepat' : 'Quick Action';
+    $quickActionDescription = $userRole === 'Kepala Desa'
+        ? 'Akses cepat untuk melihat data monitoring desa.'
+        : 'Akses cepat untuk input data administrasi.';
 @endphp
 
 <div class="container-fluid px-0">
@@ -96,9 +161,9 @@
             <div class="row g-4 align-items-center">
                 <div class="col-lg-7">
                     <span class="badge text-bg-success mb-3">Dashboard SIPERDES</span>
-                    <h3 class="fw-bold text-success mb-2">Ringkasan Administrasi Desa</h3>
+                    <h3 class="fw-bold text-success mb-2">{{ $dashboardTitle }}</h3>
                     <p class="text-muted mb-0">
-                        Pantau jumlah data terbaru dan buka modul administrasi desa dari satu halaman utama.
+                        {{ $dashboardDescription }}
                     </p>
                 </div>
                 <div class="col-lg-5">
@@ -112,7 +177,7 @@
                         <div class="col-sm-6">
                             <div class="user-info-box h-100 bg-white">
                                 <small class="text-muted d-block">Role</small>
-                                <strong>{{ Auth::user()->role ?? 'Pengguna' }}</strong>
+                                <strong>{{ $userRole }}</strong>
                             </div>
                         </div>
                     </div>
@@ -148,14 +213,113 @@
         @endforeach
     </div>
 
+    @if($userRole === 'Kepala Desa')
+        <div class="row g-4 mb-4">
+            <div class="col-xl-7">
+                <div class="card dashboard-info-card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+                            <div>
+                                <h5 class="fw-bold text-success mb-1">Grafik Kemajuan Desa</h5>
+                                <p class="text-muted small mb-0">Lihat tren kegiatan desa dan bantuan sosial pada 6 bulan terakhir.</p>
+                            </div>
+                            <span class="module-icon"><i class="bi bi-graph-up"></i></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="mb-1">Kegiatan Desa</h6>
+                                    <small class="text-muted">Data riil dari tabel kegiatan desa.</small>
+                                </div>
+                                <span class="badge bg-success">Aktual</span>
+                            </div>
+
+                            <div class="d-flex align-items-end gap-2" style="height: 220px;">
+                                @foreach($trendLabels as $index => $label)
+                                    @php
+                                        $barHeight = $trendMax ? max(18, (int) (($kegiatanTrend[$index] ?? 0) / $trendMax * 180)) : 18;
+                                    @endphp
+                                    <div class="text-center" style="flex: 1; min-width: 0;">
+                                        <div class="rounded-4 bg-success" style="height: {{ $barHeight }}px;
+                                            transition: height .3s ease;
+                                            box-shadow: inset 0 -6px 0 rgba(255,255,255,0.18);"></div>
+                                        <small class="d-block text-muted mt-2" style="font-size: .75rem;">{{ $label }}</small>
+                                        <small class="d-block text-success fw-semibold">{{ $kegiatanTrend[$index] ?? 0 }}</small>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="user-info-box h-100">
+                                    <small class="text-muted d-block">Kegiatan 6 Bulan</small>
+                                    <strong class="fs-4 text-success">{{ $kemajuanKegiatanTotal }}</strong>
+                                    <p class="text-muted mb-0">Jumlah kegiatan yang tercatat dalam 6 bulan terakhir.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="user-info-box h-100">
+                                    <small class="text-muted d-block">Bantuan 6 Bulan</small>
+                                    <strong class="fs-4 text-success">{{ $kemajuanBantuanTotal }}</strong>
+                                    <p class="text-muted mb-0">Jumlah bantuan sosial tercatat dalam 6 bulan terakhir.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-5">
+                <div class="card dashboard-info-card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+                            <div>
+                                <h5 class="fw-bold text-success mb-1">Kemajuan Desa</h5>
+                                <p class="text-muted small mb-0">Indikator kemajuan berbasis riil data administrasi.</p>
+                            </div>
+                            <span class="module-icon"><i class="bi bi-award"></i></span>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="user-info-box h-100">
+                                    <small class="text-muted d-block">Kegiatan Bulan Ini</small>
+                                    <strong class="fs-4 text-success">{{ $kemajuanKegiatanBulanIni }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="user-info-box h-100">
+                                    <small class="text-muted d-block">Bantuan Bulan Ini</small>
+                                    <strong class="fs-4 text-success">{{ $kemajuanBantuanBulanIni }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="user-info-box h-100">
+                                    <small class="text-muted d-block">Surat Masuk Menunggu</small>
+                                    <strong class="fs-4 text-success">{{ $pendingVerifikasiMasuk }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="user-info-box h-100">
+                                    <small class="text-muted d-block">Surat Keluar Menunggu</small>
+                                    <strong class="fs-4 text-success">{{ $pendingPersetujuanKeluar }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="row g-4">
         <div class="col-xl-7">
             <div class="card dashboard-info-card shadow-sm border-0 h-100">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
                         <div>
-                            <h5 class="fw-bold text-success mb-1">Quick Action</h5>
-                            <p class="text-muted small mb-0">Akses cepat untuk input data administrasi.</p>
+                            <h5 class="fw-bold text-success mb-1">{{ $quickActionTitle }}</h5>
+                            <p class="text-muted small mb-0">{{ $quickActionDescription }}</p>
                         </div>
                         <span class="module-icon"><i class="bi bi-lightning-charge"></i></span>
                     </div>
@@ -251,13 +415,13 @@
                         <div class="col-6">
                             <div class="user-info-box h-100">
                                 <small class="text-muted d-block">Pengguna</small>
-                                <strong>{{ Auth::user()->nama ?? Auth::user()->username ?? 'Pengguna' }}</strong>
+                                <strong>{{ $userName }}</strong>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="user-info-box h-100">
                                 <small class="text-muted d-block">Modul Aktif</small>
-                                <strong>5 Modul</strong>
+                                <strong>{{ $activeModuleCount }} Modul</strong>
                             </div>
                         </div>
                     </div>

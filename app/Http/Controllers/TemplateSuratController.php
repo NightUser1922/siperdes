@@ -23,11 +23,13 @@ class TemplateSuratController extends Controller
 
     public function create()
     {
+        $this->authorizeAdmin();
         return view('template-surat.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorizeAdmin();
         $validated = $request->validate([
             'nama_template' => 'required|string|max:150',
             'jenis_surat' => 'required|string|max:100',
@@ -54,6 +56,7 @@ class TemplateSuratController extends Controller
 
     public function edit($id)
     {
+        $this->authorizeAdmin();
         $template = TemplateSurat::where('id_template', $id)->firstOrFail();
 
         return view('template-surat.edit', compact('template'));
@@ -61,6 +64,7 @@ class TemplateSuratController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $template = TemplateSurat::where('id_template', $id)->firstOrFail();
 
         $validated = $request->validate([
@@ -91,6 +95,7 @@ class TemplateSuratController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $template = TemplateSurat::where('id_template', $id)->firstOrFail();
         $namaTemplate = $template->nama_template;
 

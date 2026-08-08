@@ -16,11 +16,13 @@ class KegiatanDesaController extends Controller
 
     public function create()
     {
+        $this->authorizeAdmin();
         return view('kegiatan-desa-create');
     }
 
     public function store(Request $request)
     {
+        $this->authorizeAdmin();
         $request->validate([
             'nama_kegiatan'    => 'required|string|max:150',
             'tanggal_kegiatan' => 'required|date',
@@ -43,12 +45,14 @@ class KegiatanDesaController extends Controller
 
     public function edit($id)
     {
+        $this->authorizeAdmin();
         $kegiatan = KegiatanDesa::where('id_kegiatan', $id)->firstOrFail();
         return view('kegiatan-desa-edit', compact('kegiatan'));
     }
 
     public function update(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $request->validate([
             'nama_kegiatan'    => 'required|string|max:150',
             'tanggal_kegiatan' => 'required|date',
@@ -72,6 +76,7 @@ class KegiatanDesaController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $kegiatan = KegiatanDesa::where('id_kegiatan', $id)->firstOrFail();
         $namaKegiatan = $kegiatan->nama_kegiatan;
         $kegiatan->delete();

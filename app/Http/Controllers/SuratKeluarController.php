@@ -24,6 +24,7 @@ class SuratKeluarController extends Controller
 
     public function create()
     {
+        $this->authorizeAdmin();
         $templates = $this->activeTemplates();
         $templatesForJs = $this->templatesForJs($templates);
 
@@ -32,6 +33,7 @@ class SuratKeluarController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeAdmin();
         $validated = $request->validate($this->rules(true));
         $usesUpload = $request->hasFile('file_surat');
         $template = $usesUpload ? null : $this->templateFromRequest($validated['id_template'] ?? null);
@@ -63,6 +65,7 @@ class SuratKeluarController extends Controller
 
     public function edit($id)
     {
+        $this->authorizeAdmin();
         $suratKeluar = SuratKeluar::with('templateSurat')->where('id_surat_keluar', $id)->firstOrFail();
         $templates = $this->activeTemplates($suratKeluar->id_template);
         $templatesForJs = $this->templatesForJs($templates);
@@ -72,6 +75,7 @@ class SuratKeluarController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
         $validated = $request->validate($this->rules(false));
         $usesUpload = $request->hasFile('file_surat');
@@ -112,6 +116,7 @@ class SuratKeluarController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $suratKeluar = SuratKeluar::where('id_surat_keluar', $id)->firstOrFail();
         $this->hapusFileSurat($suratKeluar->file_surat);
 
@@ -124,6 +129,7 @@ class SuratKeluarController extends Controller
 
     public function previewTemplate(Request $request)
     {
+        $this->authorizeAdmin();
         [$template, $data] = $this->validatedTemplatePreview($request);
         AuditLog::catat($request, 'Preview PDF', 'Surat Keluar', 'Preview PDF dari template ' . $template->nama_template);
 
@@ -132,6 +138,7 @@ class SuratKeluarController extends Controller
 
     public function downloadTemplate(Request $request)
     {
+        $this->authorizeAdmin();
         [$template, $data] = $this->validatedTemplatePreview($request);
         AuditLog::catat($request, 'Download PDF', 'Surat Keluar', 'Download PDF dari template ' . $template->nama_template);
 
@@ -140,6 +147,7 @@ class SuratKeluarController extends Controller
 
     public function generate(Request $request, $id)
     {
+        $this->authorizeAdmin();
         $suratKeluar = SuratKeluar::with('templateSurat')->where('id_surat_keluar', $id)->firstOrFail();
 
         if (!$suratKeluar->templateSurat || !$suratKeluar->data_template) {
