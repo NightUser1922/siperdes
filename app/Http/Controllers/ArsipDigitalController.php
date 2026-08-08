@@ -53,8 +53,9 @@ class ArsipDigitalController extends Controller
         $arsipDigital = $query->paginate(10)->withQueryString();
         $kategoriList = $this->kategoriList;
         $totalArsip = ArsipDigital::count();
+        $isConnected = $this->googleDriveService->isOAuthConnected();
 
-        return view('arsip-digital', compact('arsipDigital', 'kategoriList', 'filters', 'totalArsip'));
+        return view('arsip-digital', compact('arsipDigital', 'kategoriList', 'filters', 'totalArsip', 'isConnected'));
     }
 
     public function create()

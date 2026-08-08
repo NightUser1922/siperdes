@@ -66,11 +66,14 @@
                             <th>Tanggal</th>
                             <th>Lokasi</th>
                             <th>Keterangan</th>
+                            <th>Tim Pelaksana</th>
+                            <th>Penanggung Jawab</th>
+                            <th>Dokumentasi</th>
                         </tr>
                     </thead>
                     <tbody id="kegiatanTableBody" data-admin-table data-search-input="#kegiatanSearch" data-pagination="#kegiatanPagination" data-table-info="#kegiatanTableInfo" data-empty-row="#kegiatanSearchEmpty" data-item-label="data kegiatan">
                         @forelse($kegiatanDesa as $kegiatan)
-                            <tr data-search-row="{{ strtolower($kegiatan->nama_kegiatan.' '.$kegiatan->lokasi.' '.$kegiatan->keterangan) }}">
+                            <tr data-search-row="{{ strtolower($kegiatan->nama_kegiatan.' '.$kegiatan->lokasi.' '.$kegiatan->keterangan.' '.$kegiatan->tim_pelaksana.' '.$kegiatan->penanggung_jawab) }}">
                                 <td>
                                     <div class="d-inline-flex gap-1">
                                         <a href="/kegiatan-desa/edit/{{ $kegiatan->id_kegiatan }}" class="btn btn-warning btn-sm action-btn" title="Edit">
@@ -89,10 +92,20 @@
                                 <td>{{ \Carbon\Carbon::parse($kegiatan->tanggal_kegiatan)->format('d-m-Y') }}</td>
                                 <td>{{ $kegiatan->lokasi }}</td>
                                 <td class="text-start">{{ $kegiatan->keterangan }}</td>
+                                <td class="text-start">{{ $kegiatan->tim_pelaksana }}</td>
+                                <td class="text-start">{{ $kegiatan->penanggung_jawab }}</td>
+                                <td>
+                                    @if(!empty($kegiatan->dokumentasi))
+                                        <a href="{{ url('/uploads/kegiatan_dokumentasi/' . $kegiatan->dokumentasi) }}" target="_blank" class="btn btn-outline-secondary btn-sm"><i class="bi bi-eye"></i></a>
+                                        <a href="{{ url('/uploads/kegiatan_dokumentasi/' . $kegiatan->dokumentasi) }}" download class="btn btn-outline-success btn-sm"><i class="bi bi-download"></i></a>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5">
+                                <td colspan="8">
                                     <div class="empty-state">
                                         <i class="bi bi-calendar-event d-block mb-2"></i>
                                         <strong>Belum ada data kegiatan desa</strong>
@@ -102,7 +115,7 @@
                             </tr>
                         @endforelse
                         <tr id="kegiatanSearchEmpty" class="d-none">
-                            <td colspan="5">
+                            <td colspan="8">
                                 <div class="empty-state">
                                     <i class="bi bi-search d-block mb-2"></i>
                                     <strong>Data tidak ditemukan</strong>

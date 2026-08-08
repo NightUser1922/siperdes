@@ -41,11 +41,17 @@
                     </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    @if(Auth::check() && Auth::user()->role === 'Admin')
-                        <a href="{{ url('/google-drive/connect') }}" class="btn btn-outline-success rounded-pill px-4">
-                            <i class="bi bi-google me-2"></i>Hubungkan Google Drive
-                        </a>
+                    @if(isset($isConnected) && $isConnected)
+                        <span class="btn btn-success rounded-pill px-4 disabled" aria-disabled="true"><i class="bi bi-check2-circle me-2"></i>Google Drive Terhubung</span>
+                    @else
+                        {{-- show connect button to Admin and Kepala Desa --}}
+                        @if(Auth::check() && in_array(Auth::user()->role, ['Admin', 'Kepala Desa'], true))
+                            <a href="{{ url('/google-drive/connect') }}" class="btn btn-outline-success rounded-pill px-4">
+                                <i class="bi bi-google me-2"></i>Hubungkan Google Drive
+                            </a>
+                        @endif
                     @endif
+
                     <a href="{{ url('/arsip-digital/create') }}" class="btn btn-success rounded-pill px-4">
                         <i class="bi bi-cloud-upload me-2"></i>Upload Arsip
                     </a>
@@ -53,6 +59,12 @@
             </div>
         </div>
     </div>
+
+    @if(!(isset($isConnected) && $isConnected))
+        <div class="alert alert-info rounded-4 mb-4">
+            <i class="bi bi-info-circle me-2"></i>Google Drive belum terhubung. Hubungkan Google Drive untuk menyimpan arsip secara private ke Google Drive. Klik tombol "Hubungkan Google Drive".
+        </div>
+    @endif
 
     <div class="card module-card shadow-sm border-0 mb-4">
         <div class="card-body p-4">

@@ -48,7 +48,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ url('/kegiatan-desa/store') }}" method="POST">
+                    <form action="{{ url('/kegiatan-desa/store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
                             <label for="nama_kegiatan" class="form-label fw-semibold">Nama Kegiatan <span class="required-dot">*</span></label>
@@ -65,6 +65,19 @@
                         <div class="mb-4">
                             <label for="keterangan" class="form-label fw-semibold">Keterangan <span class="required-dot">*</span></label>
                             <textarea class="form-control" id="keterangan" name="keterangan" rows="4" required>{{ old('keterangan') }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tim_pelaksana" class="form-label fw-semibold">Tim Pelaksana</label>
+                            <input type="text" class="form-control" id="tim_pelaksana" name="tim_pelaksana" value="{{ old('tim_pelaksana') }}" maxlength="255">
+                        </div>
+                        <div class="mb-3">
+                            <label for="penanggung_jawab" class="form-label fw-semibold">Penanggung Jawab</label>
+                            <input type="text" class="form-control" id="penanggung_jawab" name="penanggung_jawab" value="{{ old('penanggung_jawab') }}" maxlength="150">
+                        </div>
+                        <div class="mb-4">
+                            <label for="dokumentasi" class="form-label fw-semibold">Dokumentasi (Upload file)</label>
+                            <input type="file" class="form-control" id="dokumentasi" name="dokumentasi" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            <small class="text-muted">Maks 10MB. Tipe: pdf, doc, docx, jpg, jpeg, png.</small>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 mt-4">
                             <a href="{{ url('/kegiatan-desa') }}" class="btn btn-light border px-4 rounded-pill"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
