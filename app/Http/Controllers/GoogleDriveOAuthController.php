@@ -44,7 +44,7 @@ class GoogleDriveOAuthController extends Controller
         return redirect('/arsip-digital')->with('success', 'Google Drive berhasil dihubungkan.');
     }
 
-    private function authorizeAdmin(): void
+    protected function authorizeAdmin(): void
     {
         if (!auth()->check() || auth()->user()->role !== 'Admin') {
             abort(403);
