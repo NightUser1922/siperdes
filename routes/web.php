@@ -161,11 +161,25 @@ function dashboardData()
         $totalArsip = 0;
     }
 
+    try {
+        $pendingVerifikasiMasuk = SuratMasuk::where('status_verifikasi', 'Menunggu')->count();
+    } catch (\Exception $e) {
+        $pendingVerifikasiMasuk = 0;
+    }
+
+    try {
+        $pendingPersetujuanKeluar = SuratKeluar::where('status_persetujuan', 'Menunggu')->count();
+    } catch (\Exception $e) {
+        $pendingPersetujuanKeluar = 0;
+    }
+
     return view('dashboard', compact(
         'totalMasuk',
         'totalKeluar',
         'totalKegiatan',
         'totalBantuan',
-        'totalArsip'
+        'totalArsip',
+        'pendingVerifikasiMasuk',
+        'pendingPersetujuanKeluar'
     ));
 }

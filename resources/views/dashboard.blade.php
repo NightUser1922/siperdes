@@ -86,6 +86,8 @@
             'color' => 'warning',
         ],
     ];
+
+    $userRole = Auth::user()->role ?? 'Pengguna';
 @endphp
 
 <div class="container-fluid px-0">
@@ -204,6 +206,36 @@
             </div>
         </div>
     </div>
+
+    @if($userRole === 'Kepala Desa')
+        <div class="card dashboard-info-card shadow-sm border-0 mt-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+                    <div>
+                        <h5 class="fw-bold text-success mb-1">Monitoring Kepala Desa</h5>
+                        <p class="text-muted small mb-0">Pantau status administrasi dan surat yang membutuhkan perhatian.</p>
+                    </div>
+                    <span class="module-icon"><i class="bi bi-eye-fill"></i></span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="user-info-box h-100">
+                            <small class="text-muted d-block">Surat Masuk Menunggu Verifikasi</small>
+                            <strong class="fs-4 text-success">{{ $pendingVerifikasiMasuk }}</strong>
+                            <p class="text-muted mb-0">Surat masuk yang masih perlu dicek statusnya.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="user-info-box h-100">
+                            <small class="text-muted d-block">Surat Keluar Menunggu Persetujuan</small>
+                            <strong class="fs-4 text-success">{{ $pendingPersetujuanKeluar }}</strong>
+                            <p class="text-muted mb-0">Surat keluar yang masih menunggu tindak lanjut.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="card dashboard-info-card shadow-sm border-0 mt-4">
         <div class="card-body p-4">
