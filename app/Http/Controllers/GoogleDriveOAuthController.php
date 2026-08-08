@@ -15,7 +15,7 @@ class GoogleDriveOAuthController extends Controller
 
     public function connect(Request $request): RedirectResponse
     {
-        $this->authorizeAdmin();
+        $this->authorizeAdminOrKades();
 
         $state = Str::random(40);
         $request->session()->put('google_drive_oauth_state', $state);
@@ -25,7 +25,7 @@ class GoogleDriveOAuthController extends Controller
 
     public function callback(Request $request): RedirectResponse
     {
-        $this->authorizeAdmin();
+        $this->authorizeAdminOrKades();
 
         if ($request->query('state') !== $request->session()->pull('google_drive_oauth_state')) {
             return redirect('/arsip-digital')->with('error', 'State OAuth Google Drive tidak valid.');
@@ -44,10 +44,6 @@ class GoogleDriveOAuthController extends Controller
         return redirect('/arsip-digital')->with('success', 'Google Drive berhasil dihubungkan.');
     }
 
-    protected function authorizeAdmin(): void
-    {
-        if (!auth()->check() || auth()->user()->role !== 'Admin') {
-            abort(403);
-        }
-    }
+    // Use authorize methods from base Controller
+
 }
