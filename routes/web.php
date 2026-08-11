@@ -9,6 +9,7 @@ use App\Http\Controllers\ArsipDigitalController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\GoogleDriveOAuthController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\PendudukTemporalController;
 use App\Http\Controllers\TemplateSuratController;
 use App\Http\Controllers\DashboardController;
 use App\Models\ArsipDigital;
@@ -47,6 +48,14 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::put('/template-surat/update/{id}', [TemplateSuratController::class, 'update']);
     Route::get('/template-surat/download/{id}', [TemplateSuratController::class, 'download']);
     Route::delete('/template-surat/delete/{id}', [TemplateSuratController::class, 'destroy']);
+
+    // ==========================================
+    // ROUTE DATA PENDUDUK TEMPORAL
+    // ==========================================
+    Route::get('/penduduk-temporal', [PendudukTemporalController::class, 'index']);
+    Route::post('/penduduk-temporal/store', [PendudukTemporalController::class, 'store']);
+    Route::put('/penduduk-temporal/update/{id}', [PendudukTemporalController::class, 'update']);
+    Route::delete('/penduduk-temporal/delete/{id}', [PendudukTemporalController::class, 'destroy']);
 
     // ==========================================
     // ROUTE SURAT KELUAR

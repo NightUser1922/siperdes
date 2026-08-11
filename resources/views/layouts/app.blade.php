@@ -380,6 +380,10 @@
                 <i class="bi bi-file-earmark-richtext me-2"></i><span class="menu-text">Template Surat</span>
             </a>
 
+            <a href="{{ url('/penduduk-temporal') }}" class="{{ Request::is('penduduk-temporal*') ? 'active' : '' }}">
+                <i class="bi bi-person-vcard me-2"></i><span class="menu-text">Data Penduduk</span>
+            </a>
+
             <a href="{{ url('/kegiatan-desa') }}" class="{{ Request::is('kegiatan-desa*') ? 'active' : '' }}">
                 <i class="bi bi-calendar-event me-2"></i><span class="menu-text">Kegiatan Desa</span>
             </a>
