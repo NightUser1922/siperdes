@@ -8,6 +8,7 @@ use App\Models\SuratKeluar;
 use App\Models\TemplateSurat;
 use App\Services\TemplateSuratService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class SuratKeluarController extends Controller
@@ -80,27 +81,31 @@ class SuratKeluarController extends Controller
         $templateData = $template ? $this->templateData($request, $template, $pendudukPenerima) : null;
         $namaFile = $usesUpload ? $this->simpanFileManual($request) : '';
 
-        $suratKeluar = SuratKeluar::create([
-            'id_template' => $template?->id_template,
-            'nomor_surat' => $validated['nomor_surat'],
-            'tanggal_surat' => $validated['tanggal_surat'],
-            'tujuan' => $pendudukPenerima?->nama ?? $validated['tujuan'],
-            'perihal' => $validated['perihal'],
-            'file_surat' => $namaFile,
-            'status_persetujuan' => 'Menunggu',
-            'snapshot_identitas' => $pendudukPenerima ? $this->snapshotIdentitas($pendudukPenerima) : null,
-            'data_template' => $templateData,
-            'metode_pembuatan' => $usesUpload ? 'Upload' : 'Template',
-            'id_user' => auth()->user()->id_user,
-        ]);
+        $suratKeluar = DB::transaction(function () use ($request, $validated, $usesUpload, $template, $pendudukPenerima, $templateData, $namaFile) {
+            $suratKeluar = SuratKeluar::create([
+                'id_template' => $template?->id_template,
+                'nomor_surat' => $validated['nomor_surat'],
+                'tanggal_surat' => $validated['tanggal_surat'],
+                'tujuan' => $pendudukPenerima?->nama ?? $validated['tujuan'],
+                'perihal' => $validated['perihal'],
+                'file_surat' => $namaFile,
+                'status_persetujuan' => 'Menunggu',
+                'snapshot_identitas' => $pendudukPenerima ? $this->snapshotIdentitas($pendudukPenerima) : null,
+                'data_template' => $templateData,
+                'metode_pembuatan' => $usesUpload ? 'Upload' : 'Template',
+                'id_user' => auth()->user()->id_user,
+            ]);
 
-        if ($template) {
-            $namaFile = $this->generateFileSurat($suratKeluar, $template, $templateData);
-            $suratKeluar->update(['file_surat' => $namaFile]);
-            $pendudukPenerima->refreshLastUsedAt();
-        }
+            if ($template) {
+                $namaFile = $this->generateFileSurat($suratKeluar, $template, $templateData);
+                $suratKeluar->update(['file_surat' => $namaFile]);
+                $pendudukPenerima->refreshLastUsedAt();
+            }
 
-        AuditLog::catat($request, 'Tambah data', 'Surat Keluar', 'Menambah surat keluar ' . $suratKeluar->nomor_surat);
+            AuditLog::catat($request, 'Tambah data', 'Surat Keluar', 'Menambah surat keluar ' . $suratKeluar->nomor_surat);
+
+            return $suratKeluar;
+        });
 
         return redirect('/surat-keluar')->with('success', 'Data Surat Keluar berhasil disimpan!');
     }
@@ -175,7 +180,7 @@ class SuratKeluarController extends Controller
         [$template, $data] = $this->validatedTemplatePreview($request);
         AuditLog::catat($request, 'Preview PDF', 'Surat Keluar', 'Preview PDF dari template ' . $template->nama_template);
 
-        return $this->templateService->renderPdf($template, $data)->stream($this->pdfName($request->nomor_surat ?: 'preview'));
+        return $this->templateService->streamPdf($template, $data, $this->pdfName($request->nomor_surat ?: 'preview'));
     }
 
     public function downloadTemplate(Request $request)
@@ -184,7 +189,7 @@ class SuratKeluarController extends Controller
         [$template, $data] = $this->validatedTemplatePreview($request);
         AuditLog::catat($request, 'Download PDF', 'Surat Keluar', 'Download PDF dari template ' . $template->nama_template);
 
-        return $this->templateService->renderPdf($template, $data)->download($this->pdfName($request->nomor_surat ?: 'template'));
+        return $this->templateService->downloadPdf($template, $data, $this->pdfName($request->nomor_surat ?: 'template'));
     }
 
     public function generate(Request $request, $id)
@@ -213,7 +218,7 @@ class SuratKeluarController extends Controller
         }
 
         if ($suratKeluar->templateSurat && $suratKeluar->data_template) {
-            return $this->templateService->renderPdf($suratKeluar->templateSurat, $suratKeluar->data_template)->stream($this->pdfName($suratKeluar->nomor_surat));
+            return $this->templateService->streamPdf($suratKeluar->templateSurat, $suratKeluar->data_template, $this->pdfName($suratKeluar->nomor_surat));
         }
 
         return redirect('/surat-keluar')->with('error', 'Preview PDF tidak tersedia untuk surat ini.');
@@ -229,7 +234,7 @@ class SuratKeluarController extends Controller
         }
 
         if ($suratKeluar->templateSurat && $suratKeluar->data_template) {
-            return $this->templateService->renderPdf($suratKeluar->templateSurat, $suratKeluar->data_template)->download($this->pdfName($suratKeluar->nomor_surat));
+            return $this->templateService->downloadPdf($suratKeluar->templateSurat, $suratKeluar->data_template, $this->pdfName($suratKeluar->nomor_surat));
         }
 
         return redirect('/surat-keluar')->with('error', 'File surat tidak tersedia.');
@@ -291,7 +296,7 @@ class SuratKeluarController extends Controller
             $template->id_template => [
                 'nama_template' => $template->nama_template,
                 'jenis_surat' => $template->jenis_surat,
-                'placeholder' => array_values($template->placeholder ?? []),
+                'placeholder' => array_values($this->templateService->placeholders($template)),
             ],
         ])->all();
     }
@@ -313,7 +318,7 @@ class SuratKeluarController extends Controller
         ];
 
         $data = [];
-        foreach ($template->placeholder ?? [] as $placeholder) {
+        foreach ($this->templateService->placeholders($template) as $placeholder) {
             $data[$placeholder] = $coreData[$placeholder]
                 ?? $pendudukData[$placeholder]
                 ?? ($manualData[$placeholder] ?? '');
