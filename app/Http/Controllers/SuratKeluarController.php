@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
+use App\Models\PendudukTemporal;
 use App\Models\SuratKeluar;
 use App\Models\TemplateSurat;
 use App\Services\TemplateSuratService;
@@ -36,32 +37,58 @@ class SuratKeluarController extends Controller
         return view('surat-keluar-create-manual');
     }
 
-    public function createTemplate()
+    public function createTemplate(Request $request)
     {
         $this->authorizeAdmin();
         $templates = $this->activeTemplates();
         $templatesForJs = $this->templatesForJs($templates);
+        $selectedTemplateId = $request->query('id_template');
+        $nikPenerima = trim((string) $request->query('nik_penerima', ''));
+        $pendudukPenerima = null;
+        $pendudukNotFound = false;
 
-        return view('surat-keluar-create-template', compact('templates', 'templatesForJs'));
+        if ($nikPenerima !== '') {
+            $request->validate([
+                'nik_penerima' => 'string|max:20',
+                'id_template' => 'nullable|exists:tb_template_surat,id_template',
+            ], [
+                'nik_penerima.max' => 'NIK maksimal 20 karakter.',
+                'id_template.exists' => 'Template surat tidak ditemukan.',
+            ]);
+
+            $pendudukPenerima = PendudukTemporal::where('nik', $nikPenerima)->first();
+            $pendudukNotFound = !$pendudukPenerima;
+        }
+
+        return view('surat-keluar-create-template', compact(
+            'templates',
+            'templatesForJs',
+            'selectedTemplateId',
+            'nikPenerima',
+            'pendudukPenerima',
+            'pendudukNotFound'
+        ));
     }
 
     public function store(Request $request)
     {
         $this->authorizeAdmin();
-        $validated = $request->validate($this->rules(true));
+        $validated = $request->validate($this->rules(true), $this->templateMessages());
         $usesUpload = $request->hasFile('file_surat');
         $template = $usesUpload ? null : $this->templateFromRequest($validated['id_template'] ?? null);
-        $templateData = $template ? $this->templateData($request, $template) : null;
+        $pendudukPenerima = $template ? $this->pendudukFromRequest($request) : null;
+        $templateData = $template ? $this->templateData($request, $template, $pendudukPenerima) : null;
         $namaFile = $usesUpload ? $this->simpanFileManual($request) : '';
 
         $suratKeluar = SuratKeluar::create([
             'id_template' => $template?->id_template,
             'nomor_surat' => $validated['nomor_surat'],
             'tanggal_surat' => $validated['tanggal_surat'],
-            'tujuan' => $validated['tujuan'],
+            'tujuan' => $pendudukPenerima?->nama ?? $validated['tujuan'],
             'perihal' => $validated['perihal'],
             'file_surat' => $namaFile,
             'status_persetujuan' => 'Menunggu',
+            'snapshot_identitas' => $pendudukPenerima ? $this->snapshotIdentitas($pendudukPenerima) : null,
             'data_template' => $templateData,
             'metode_pembuatan' => $usesUpload ? 'Upload' : 'Template',
             'id_user' => auth()->user()->id_user,
@@ -70,6 +97,7 @@ class SuratKeluarController extends Controller
         if ($template) {
             $namaFile = $this->generateFileSurat($suratKeluar, $template, $templateData);
             $suratKeluar->update(['file_surat' => $namaFile]);
+            $pendudukPenerima->refreshLastUsedAt();
         }
 
         AuditLog::catat($request, 'Tambah data', 'Surat Keluar', 'Menambah surat keluar ' . $suratKeluar->nomor_surat);
@@ -211,12 +239,14 @@ class SuratKeluarController extends Controller
     {
         $fileRule = $create ? 'nullable|required_without:id_template' : 'nullable';
         $templateRule = $create ? 'nullable|required_without:file_surat' : 'nullable';
+        $tujuanRule = $create ? 'nullable|required_without:id_template|string|max:100' : 'required|string|max:100';
 
         return [
             'id_template' => $templateRule . '|exists:tb_template_surat,id_template',
+            'nik_penerima' => 'nullable|required_with:id_template|string|max:20',
             'nomor_surat' => 'required|string|max:100',
             'tanggal_surat' => 'required|date',
-            'tujuan' => 'required|string|max:100',
+            'tujuan' => $tujuanRule,
             'perihal' => 'required|string|max:255',
             'data_template' => 'nullable|array',
             'data_template.*' => 'nullable|string|max:1000',
@@ -228,17 +258,18 @@ class SuratKeluarController extends Controller
     {
         $validated = $request->validate([
             'id_template' => 'required|exists:tb_template_surat,id_template',
+            'nik_penerima' => 'required|string|max:20|exists:penduduk_temporal,nik',
             'nomor_surat' => 'required|string|max:100',
             'tanggal_surat' => 'required|date',
-            'tujuan' => 'required|string|max:100',
             'perihal' => 'required|string|max:255',
             'data_template' => 'nullable|array',
             'data_template.*' => 'nullable|string|max:1000',
-        ]);
+        ], $this->templateMessages());
 
         $template = $this->templateFromRequest($validated['id_template']);
+        $pendudukPenerima = $this->pendudukFromRequest($request);
 
-        return [$template, $this->templateData($request, $template)];
+        return [$template, $this->templateData($request, $template, $pendudukPenerima)];
     }
 
     private function activeTemplates(?int $includeId = null)
@@ -270,24 +301,81 @@ class SuratKeluarController extends Controller
         return TemplateSurat::where('id_template', $idTemplate)->firstOrFail();
     }
 
-    private function templateData(Request $request, TemplateSurat $template): array
+    private function templateData(Request $request, TemplateSurat $template, ?PendudukTemporal $pendudukPenerima = null): array
     {
         $manualData = $request->input('data_template', []);
+        $pendudukData = $pendudukPenerima ? $this->pendudukPlaceholderData($pendudukPenerima) : [];
         $coreData = [
             'nomor_surat' => $request->nomor_surat,
             'tanggal_surat' => $request->tanggal_surat,
-            'tujuan' => $request->tujuan,
+            'tujuan' => $pendudukPenerima?->nama ?? $request->tujuan,
             'perihal' => $request->perihal,
         ];
 
         $data = [];
         foreach ($template->placeholder ?? [] as $placeholder) {
-            $data[$placeholder] = $coreData[$placeholder] ?? ($manualData[$placeholder] ?? '');
+            $data[$placeholder] = $coreData[$placeholder]
+                ?? $pendudukData[$placeholder]
+                ?? ($manualData[$placeholder] ?? '');
         }
 
         return $data;
     }
 
+    private function pendudukFromRequest(Request $request): PendudukTemporal
+    {
+        $validated = $request->validate([
+            'nik_penerima' => 'required|string|max:20|exists:penduduk_temporal,nik',
+        ], $this->templateMessages());
+
+        return PendudukTemporal::where('nik', $validated['nik_penerima'])->firstOrFail();
+    }
+
+    private function pendudukPlaceholderData(PendudukTemporal $penduduk): array
+    {
+        $tanggalLahir = $penduduk->tanggal_lahir?->format('d-m-Y');
+        $tempatTanggalLahir = trim(implode(', ', array_filter([
+            $penduduk->tempat_lahir,
+            $tanggalLahir,
+        ])));
+
+        return [
+            'nik' => $penduduk->nik,
+            'nama' => $penduduk->nama,
+            'tempat_tanggal_lahir' => $tempatTanggalLahir,
+            'pekerjaan' => $penduduk->pekerjaan,
+            'jenis_kelamin' => $penduduk->jenis_kelamin,
+            'kewarganegaraan' => $penduduk->kewarganegaraan,
+            'agama' => $penduduk->agama,
+            'alamat' => $penduduk->alamat,
+        ];
+    }
+
+    private function snapshotIdentitas(PendudukTemporal $penduduk): array
+    {
+        return [
+            'nik' => $penduduk->nik,
+            'nama' => $penduduk->nama,
+            'jenis_kelamin' => $penduduk->jenis_kelamin,
+            'bin_binti' => $penduduk->bin_binti,
+            'tempat_lahir' => $penduduk->tempat_lahir,
+            'tanggal_lahir' => $penduduk->tanggal_lahir?->toDateString(),
+            'kewarganegaraan' => $penduduk->kewarganegaraan,
+            'agama' => $penduduk->agama,
+            'pekerjaan' => $penduduk->pekerjaan,
+            'alamat' => $penduduk->alamat,
+        ];
+    }
+
+    private function templateMessages(): array
+    {
+        return [
+            'nik_penerima.required' => 'NIK penerima wajib dicari terlebih dahulu.',
+            'nik_penerima.required_with' => 'NIK penerima wajib dicari terlebih dahulu.',
+            'nik_penerima.exists' => 'Data penduduk dengan NIK tersebut tidak ditemukan.',
+            'nik_penerima.max' => 'NIK maksimal 20 karakter.',
+        ];
+    }
     private function simpanFileManual(Request $request): ?string
     {
         if (!$request->hasFile('file_surat')) {
