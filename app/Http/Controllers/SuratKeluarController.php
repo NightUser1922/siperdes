@@ -347,6 +347,7 @@ class SuratKeluarController extends Controller
         return [
             'nik' => $penduduk->nik,
             'nama' => $penduduk->nama,
+            'bin_binti' => $penduduk->bin_binti,
             'tempat_tanggal_lahir' => $tempatTanggalLahir,
             'pekerjaan' => $penduduk->pekerjaan,
             'jenis_kelamin' => $penduduk->jenis_kelamin,

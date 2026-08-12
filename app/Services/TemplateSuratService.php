@@ -17,10 +17,15 @@ class TemplateSuratService
     public function extractPlaceholders(string $fileTemplate): array
     {
         $processor = $this->templateProcessor(Storage::path($fileTemplate));
-        $variables = array_values(array_unique($processor->getVariables()));
-        sort($variables);
 
-        return $variables;
+        try {
+            $variables = array_values(array_unique($processor->getVariables()));
+            sort($variables);
+
+            return $variables;
+        } finally {
+            $this->resetTemplateProcessorMacroChars();
+        }
     }
 
     public function placeholders(TemplateSurat $templateSurat): array
@@ -83,12 +88,13 @@ class TemplateSuratService
     {
         File::ensureDirectoryExists(storage_path('app/generated/surat_keluar'));
 
+        $placeholders = $this->placeholders($templateSurat);
         $processor = $this->templateProcessor(Storage::path($templateSurat->file_template));
         $previousEscaping = Settings::isOutputEscapingEnabled();
         Settings::setOutputEscapingEnabled(true);
 
         try {
-            foreach ($this->placeholders($templateSurat) as $placeholder) {
+            foreach ($placeholders as $placeholder) {
                 $processor->setValue($placeholder, $this->value($data[$placeholder] ?? ''));
             }
 
@@ -96,6 +102,7 @@ class TemplateSuratService
             $processor->saveAs($docxPath);
         } finally {
             Settings::setOutputEscapingEnabled($previousEscaping);
+            $this->resetTemplateProcessorMacroChars();
         }
 
         return $docxPath;
@@ -106,6 +113,7 @@ class TemplateSuratService
         File::ensureDirectoryExists(storage_path('app/generated/surat_keluar'));
 
         $docxPath = $this->renderDocx($templateSurat, $data);
+        $this->ensureDocxReadable($docxPath);
         $pdfPath = storage_path('app/generated/surat_keluar/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf');
 
         try {
@@ -118,6 +126,8 @@ class TemplateSuratService
                 'message' => $exception->getMessage(),
             ]);
         }
+
+        $this->ensureDocxReadable($docxPath);
 
         try {
             return $this->convertDocxToPdfWithDompdf($docxPath, $pdfPath);
@@ -132,7 +142,11 @@ class TemplateSuratService
             return false;
         }
 
-        $scriptPath = storage_path('app/generated/surat_keluar/convert_' . uniqid() . '.ps1');
+        $scriptPath = str_replace('/', DIRECTORY_SEPARATOR, storage_path('app/generated/surat_keluar/convert_' . uniqid() . '.ps1'));
+        $inputPath = str_replace('/', DIRECTORY_SEPARATOR, realpath($docxPath) ?: $docxPath);
+        $outputPath = str_replace('/', DIRECTORY_SEPARATOR, $pdfPath);
+        File::delete($outputPath);
+
         File::put($scriptPath, <<<'POWERSHELL'
 param(
     [Parameter(Mandatory = $true)] [string] $InputPath,
@@ -178,9 +192,9 @@ POWERSHELL);
                 '-File',
                 $scriptPath,
                 '-InputPath',
-                $docxPath,
+                $inputPath,
                 '-OutputPath',
-                $pdfPath,
+                $outputPath,
             ]);
             $process->setTimeout(120);
             $process->run();
@@ -189,7 +203,7 @@ POWERSHELL);
                 throw new \RuntimeException(trim($process->getErrorOutput() . PHP_EOL . $process->getOutput()));
             }
 
-            $converted = File::exists($pdfPath) && File::size($pdfPath) > 0;
+            $converted = File::exists($outputPath) && File::size($outputPath) > 0;
 
             return $converted;
         } finally {
@@ -219,12 +233,30 @@ POWERSHELL);
         }
     }
 
+    private function ensureDocxReadable(string $docxPath): void
+    {
+        IOFactory::load($docxPath);
+    }
+
     private function templateProcessor(string $path): TemplateProcessor
     {
+        $this->resetTemplateProcessorMacroChars();
+
         $processor = new TemplateProcessor($path);
         $processor->setMacroChars('{{', '}}');
 
         return $processor;
+    }
+
+    private function resetTemplateProcessorMacroChars(): void
+    {
+        $openingChars = new \ReflectionProperty(TemplateProcessor::class, 'macroOpeningChars');
+        $closingChars = new \ReflectionProperty(TemplateProcessor::class, 'macroClosingChars');
+
+        $openingChars->setAccessible(true);
+        $closingChars->setAccessible(true);
+        $openingChars->setValue(null, '${');
+        $closingChars->setValue(null, '}');
     }
 
     private function value(mixed $value): string
@@ -233,6 +265,9 @@ POWERSHELL);
             return implode(', ', array_filter($value));
         }
 
-        return trim((string) $value);
+        $text = trim((string) $value);
+        $xmlSafeText = preg_replace('/[^\x{9}\x{A}\x{D}\x{20}-\x{D7FF}\x{E000}-\x{FFFD}]/u', '', $text);
+
+        return is_string($xmlSafeText) ? $xmlSafeText : $text;
     }
 }
