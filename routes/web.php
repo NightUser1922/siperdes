@@ -62,6 +62,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // ==========================================
     Route::get('/surat-keluar', [SuratKeluarController::class, 'index']);
     Route::get('/surat-keluar/create', [SuratKeluarController::class, 'create']);
+    Route::get('/surat-keluar/create/manual', [SuratKeluarController::class, 'createManual']);
+    Route::get('/surat-keluar/create/template', [SuratKeluarController::class, 'createTemplate']);
     Route::post('/surat-keluar/store', [SuratKeluarController::class, 'store']);
     Route::post('/surat-keluar/preview-template', [SuratKeluarController::class, 'previewTemplate']);
     Route::post('/surat-keluar/download-template', [SuratKeluarController::class, 'downloadTemplate']);

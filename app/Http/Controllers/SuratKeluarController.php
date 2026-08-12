@@ -25,10 +25,24 @@ class SuratKeluarController extends Controller
     public function create()
     {
         $this->authorizeAdmin();
+
+        return view('surat-keluar-create');
+    }
+
+    public function createManual()
+    {
+        $this->authorizeAdmin();
+
+        return view('surat-keluar-create-manual');
+    }
+
+    public function createTemplate()
+    {
+        $this->authorizeAdmin();
         $templates = $this->activeTemplates();
         $templatesForJs = $this->templatesForJs($templates);
 
-        return view('surat-keluar-create', compact('templates', 'templatesForJs'));
+        return view('surat-keluar-create-template', compact('templates', 'templatesForJs'));
     }
 
     public function store(Request $request)
