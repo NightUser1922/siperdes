@@ -115,9 +115,10 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/laporan/print', [LaporanController::class, 'print']);
     Route::get('/laporan/export/pdf', [LaporanController::class, 'exportPdf']);
     Route::get('/laporan/export/excel', [LaporanController::class, 'exportExcel']);
+    Route::get('/laporan/{jenis}/preview', [LaporanController::class, 'preview']);
+    Route::get('/laporan/{jenis}/print', [LaporanController::class, 'printReport']);
     // ==========================================
     // ROUTE AUDIT LOG
     // ==========================================
     Route::get('/audit-log', [AuditLogController::class, 'index']);
 });
-
