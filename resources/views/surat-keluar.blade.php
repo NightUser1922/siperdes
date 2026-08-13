@@ -3,6 +3,7 @@
 @section('title', 'Surat Keluar')
 
 @section('content')
+@php($isAdmin = Auth::check() && Auth::user()->role === 'Admin')
 <div class="container-fluid px-0">
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb mb-0">
@@ -39,9 +40,11 @@
                     <a href="{{ url('/template-surat') }}" class="btn btn-light border rounded-pill px-4">
                         <i class="bi bi-file-earmark-richtext me-2"></i>Template Surat
                     </a>
-                    <a href="{{ url('/surat-keluar/create') }}" class="btn btn-success rounded-pill px-4">
-                        <i class="bi bi-plus-circle me-2"></i>Tambah Surat Keluar
-                    </a>
+                    @if($isAdmin)
+                        <a href="{{ url('/surat-keluar/create') }}" class="btn btn-success rounded-pill px-4">
+                            <i class="bi bi-plus-circle me-2"></i>Tambah Surat Keluar
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -81,16 +84,18 @@
                             <tr data-search-row="{{ strtolower($surat->nomor_surat.' '.$surat->tujuan.' '.$surat->perihal.' '.($surat->status_persetujuan ?? 'Menunggu').' '.($surat->metode_pembuatan ?? 'Upload').' '.optional($surat->templateSurat)->nama_template) }}">
                                 <td>
                                     <div class="d-inline-flex flex-wrap gap-1">
-                                        <a href="{{ url('/surat-keluar/edit/' . $surat->id_surat_keluar) }}" class="btn btn-warning btn-sm action-btn" title="Edit">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
+                                        @if($isAdmin)
+                                            <a href="{{ url('/surat-keluar/edit/' . $surat->id_surat_keluar) }}" class="btn btn-warning btn-sm action-btn" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                        @endif
                                         <a href="{{ url('/surat-keluar/' . $surat->id_surat_keluar . '/preview') }}" target="_blank" class="btn btn-info btn-sm action-btn" title="Preview PDF">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <a href="{{ url('/surat-keluar/' . $surat->id_surat_keluar . '/download') }}" class="btn btn-success btn-sm action-btn" title="Download PDF">
                                             <i class="bi bi-download"></i>
                                         </a>
-                                        @if($surat->id_template)
+                                        @if($isAdmin && $surat->id_template)
                                             <form action="{{ url('/surat-keluar/' . $surat->id_surat_keluar . '/generate') }}" method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-secondary btn-sm action-btn" title="Generate PDF">
@@ -98,13 +103,15 @@
                                                 </button>
                                             </form>
                                         @endif
-                                        <form action="{{ url('/surat-keluar/delete/' . $surat->id_surat_keluar) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus arsip surat keluar {{ $surat->nomor_surat }}?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        @if($isAdmin)
+                                            <form action="{{ url('/surat-keluar/delete/' . $surat->id_surat_keluar) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus arsip surat keluar {{ $surat->nomor_surat }}?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="fw-bold text-success">{{ $surat->nomor_surat }}</td>

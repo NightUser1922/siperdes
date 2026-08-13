@@ -3,6 +3,7 @@
 @section('title', 'Template Surat')
 
 @section('content')
+@php($isAdmin = Auth::check() && Auth::user()->role === 'Admin')
 <div class="container-fluid px-0">
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb mb-0">
@@ -36,9 +37,11 @@
                         <p class="text-muted mb-0">Kelola file DOCX berisi placeholder untuk generate Surat Keluar.</p>
                     </div>
                 </div>
-                <a href="{{ url('/template-surat/create') }}" class="btn btn-success rounded-pill px-4">
-                    <i class="bi bi-plus-circle me-2"></i>Tambah Template
-                </a>
+                @if($isAdmin)
+                    <a href="{{ url('/template-surat/create') }}" class="btn btn-success rounded-pill px-4">
+                        <i class="bi bi-plus-circle me-2"></i>Tambah Template
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -62,7 +65,9 @@
                 <table class="table data-table align-middle">
                     <thead>
                         <tr>
-                            <th>Aksi</th>
+                            @if($isAdmin)
+                                <th>Aksi</th>
+                            @endif
                             <th>Nama Template</th>
                             <th>Jenis Surat</th>
                             <th>Status</th>
@@ -73,20 +78,22 @@
                     <tbody id="templateTableBody" data-admin-table data-search-input="#templateSearch" data-pagination="#templatePagination" data-table-info="#templateTableInfo" data-empty-row="#templateSearchEmpty" data-item-label="template surat">
                         @forelse($templates as $template)
                             <tr data-search-row="{{ strtolower($template->nama_template.' '.$template->jenis_surat.' '.$template->status.' '.implode(' ', $template->placeholder ?? [])) }}">
-                                <td>
-                                    <div class="d-inline-flex gap-1">
-                                        <a href="{{ url('/template-surat/edit/' . $template->id_template) }}" class="btn btn-warning btn-sm action-btn" title="Edit">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <form action="{{ url('/template-surat/delete/' . $template->id_template) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus template {{ $template->nama_template }}?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+                                @if($isAdmin)
+                                    <td>
+                                        <div class="d-inline-flex gap-1">
+                                            <a href="{{ url('/template-surat/edit/' . $template->id_template) }}" class="btn btn-warning btn-sm action-btn" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <form action="{{ url('/template-surat/delete/' . $template->id_template) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus template {{ $template->nama_template }}?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                @endif
                                 <td class="fw-bold text-success text-start">{{ $template->nama_template }}</td>
                                 <td>{{ $template->jenis_surat }}</td>
                                 <td>
@@ -107,7 +114,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6">
+                                <td colspan="{{ $isAdmin ? 6 : 5 }}">
                                     <div class="empty-state">
                                         <i class="bi bi-file-earmark-richtext d-block mb-2"></i>
                                         <strong>Belum ada template surat</strong>
@@ -117,7 +124,7 @@
                             </tr>
                         @endforelse
                         <tr id="templateSearchEmpty" class="d-none">
-                            <td colspan="6">
+                            <td colspan="{{ $isAdmin ? 6 : 5 }}">
                                 <div class="empty-state">
                                     <i class="bi bi-search d-block mb-2"></i>
                                     <strong>Template tidak ditemukan</strong>
