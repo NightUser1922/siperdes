@@ -3,7 +3,6 @@
 @section('title', 'Surat Masuk')
 
 @section('content')
-@php($isAdmin = Auth::check() && Auth::user()->role === 'Admin')
 <div class="container-fluid px-0">
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb mb-0">
@@ -36,11 +35,9 @@
                         <p class="text-muted mb-0">Kelola dan pantau dokumen surat masuk yang diterima oleh desa.</p>
                     </div>
                 </div>
-                @if($isAdmin)
-                    <a href="/surat-masuk/create" class="btn btn-success rounded-pill px-4">
-                        <i class="bi bi-plus-circle me-2"></i>Tambah Surat Masuk
-                    </a>
-                @endif
+                <a href="/surat-masuk/create" class="btn btn-success rounded-pill px-4">
+                    <i class="bi bi-plus-circle me-2"></i>Tambah Surat Masuk
+                </a>
             </div>
         </div>
     </div>
@@ -64,9 +61,7 @@
                 <table class="table data-table align-middle">
                     <thead>
                         <tr>
-                            @if($isAdmin)
-                                <th>Aksi</th>
-                            @endif
+                            <th>Aksi</th>
                             <th>Nomor Surat</th>
                             <th>Tanggal Surat</th>
                             <th>Pengirim</th>
@@ -78,22 +73,20 @@
                     <tbody id="suratMasukTableBody" data-admin-table data-search-input="#suratMasukSearch" data-pagination="#suratMasukPagination" data-table-info="#suratMasukTableInfo" data-empty-row="#suratMasukSearchEmpty" data-item-label="data surat masuk">
                         @forelse($suratMasuk as $surat)
                             <tr data-search-row="{{ strtolower($surat->nomor_surat.' '.$surat->pengirim.' '.$surat->perihal.' '.$surat->status_verifikasi) }}">
-                                @if($isAdmin)
-                                    <td>
-                                        <div class="d-inline-flex gap-1">
-                                            <a href="/surat-masuk/edit/{{ $surat->id_surat_masuk }}" class="btn btn-warning btn-sm action-btn" title="Edit">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            <form action="/surat-masuk/delete/{{ $surat->id_surat_masuk }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus arsip surat masuk {{ $surat->nomor_surat }}?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                @endif
+                                <td>
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="/surat-masuk/edit/{{ $surat->id_surat_masuk }}" class="btn btn-warning btn-sm action-btn" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <form action="/surat-masuk/delete/{{ $surat->id_surat_masuk }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus arsip surat masuk {{ $surat->nomor_surat }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                                 <td class="fw-bold text-success">{{ $surat->nomor_surat }}</td>
                                 <td>{{ \Carbon\Carbon::parse($surat->tanggal_surat)->format('d-m-Y') }}</td>
                                 <td>{{ $surat->pengirim }}</td>
@@ -120,7 +113,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ $isAdmin ? 7 : 6 }}">
+                                <td colspan="7">
                                     <div class="empty-state">
                                         <i class="bi bi-inbox d-block mb-2"></i>
                                         <strong>Belum ada data surat masuk</strong>
@@ -130,7 +123,7 @@
                             </tr>
                         @endforelse
                         <tr id="suratMasukSearchEmpty" class="d-none">
-                            <td colspan="{{ $isAdmin ? 7 : 6 }}">
+                            <td colspan="7">
                                 <div class="empty-state">
                                     <i class="bi bi-search d-block mb-2"></i>
                                     <strong>Data tidak ditemukan</strong>

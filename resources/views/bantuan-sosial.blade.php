@@ -3,7 +3,6 @@
 @section('title', 'Bantuan Sosial')
 
 @section('content')
-@php($isAdmin = Auth::check() && Auth::user()->role === 'Admin')
 <div class="container-fluid px-0">
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb mb-0">
@@ -36,11 +35,9 @@
                         <p class="text-muted mb-0">Kelola data bantuan sosial dan jumlah penerima sesuai catatan administrasi desa.</p>
                     </div>
                 </div>
-                @if($isAdmin)
-                    <a href="/bantuan-sosial/create" class="btn btn-success rounded-pill px-4">
-                        <i class="bi bi-plus-circle me-2"></i>Tambah Bantuan
-                    </a>
-                @endif
+                <a href="/bantuan-sosial/create" class="btn btn-success rounded-pill px-4">
+                    <i class="bi bi-plus-circle me-2"></i>Tambah Bantuan
+                </a>
             </div>
         </div>
     </div>
@@ -64,9 +61,7 @@
                 <table class="table data-table align-middle">
                     <thead>
                         <tr>
-                            @if($isAdmin)
-                                <th>Aksi</th>
-                            @endif
+                            <th>Aksi</th>
                             <th>Nama Bantuan</th>
                             <th>Instansi Pemberi</th>
                             <th>Tanggal Bantuan</th>
@@ -76,22 +71,20 @@
                     <tbody id="bantuanTableBody" data-admin-table data-search-input="#bantuanSearch" data-pagination="#bantuanPagination" data-table-info="#bantuanTableInfo" data-empty-row="#bantuanSearchEmpty" data-item-label="data bantuan">
                         @forelse($bantuanSosial as $bantuan)
                             <tr data-search-row="{{ strtolower($bantuan->nama_bantuan.' '.$bantuan->instansi_pemberi.' '.$bantuan->tanggal_bantuan.' '.$bantuan->jumlah_penerima) }}">
-                                @if($isAdmin)
-                                    <td>
-                                        <div class="d-inline-flex gap-1">
-                                            <a href="/bantuan-sosial/edit/{{ $bantuan->id_bantuan }}" class="btn btn-warning btn-sm action-btn" title="Edit">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            <form action="/bantuan-sosial/delete/{{ $bantuan->id_bantuan }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus bantuan {{ $bantuan->nama_bantuan }}?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                @endif
+                                <td>
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="/bantuan-sosial/edit/{{ $bantuan->id_bantuan }}" class="btn btn-warning btn-sm action-btn" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <form action="/bantuan-sosial/delete/{{ $bantuan->id_bantuan }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus bantuan {{ $bantuan->nama_bantuan }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm action-btn" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                                 <td class="fw-bold text-success">{{ $bantuan->nama_bantuan }}</td>
                                 <td>{{ $bantuan->instansi_pemberi }}</td>
                                 <td>{{ \Carbon\Carbon::parse($bantuan->tanggal_bantuan)->format('d-m-Y') }}</td>
@@ -99,7 +92,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ $isAdmin ? 5 : 4 }}">
+                                <td colspan="5">
                                     <div class="empty-state">
                                         <i class="bi bi-people d-block mb-2"></i>
                                         <strong>Belum ada data bantuan sosial</strong>
@@ -109,7 +102,7 @@
                             </tr>
                         @endforelse
                         <tr id="bantuanSearchEmpty" class="d-none">
-                            <td colspan="{{ $isAdmin ? 5 : 4 }}">
+                            <td colspan="5">
                                 <div class="empty-state">
                                     <i class="bi bi-search d-block mb-2"></i>
                                     <strong>Data tidak ditemukan</strong>
