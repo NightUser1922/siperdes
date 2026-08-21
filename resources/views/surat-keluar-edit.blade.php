@@ -86,6 +86,16 @@
                                         </select>
                                     </div>
 
+                                    @php
+                                        $nikPenerima = old('nik_penerima', data_get($suratKeluar->snapshot_identitas, 'nik', data_get($suratKeluar->data_template, 'nik')));
+                                    @endphp
+                                    <div class="mb-3" id="templateNikContainer">
+                                        <label for="nik_penerima" class="form-label fw-semibold">NIK Penerima <span class="required-dot">*</span></label>
+                                        <input type="text" class="form-control @error('nik_penerima') is-invalid @enderror" id="nik_penerima" name="nik_penerima" value="{{ $nikPenerima }}" maxlength="20" placeholder="Masukkan NIK penerima">
+                                        <small class="text-muted">Wajib diisi saat menggunakan template surat.</small>
+                                        @error('nik_penerima')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    </div>
+
                                     <div id="templatePlaceholderContainer" class="d-grid gap-3"></div>
                                 </div>
                             </div>
@@ -138,7 +148,7 @@
         const oldValues = @json(old('data_template', $suratKeluar->data_template ?? []));
         const select = document.getElementById('id_template');
         const container = document.getElementById('templatePlaceholderContainer');
-        const coreFields = ['nomor_surat', 'tanggal_surat', 'tujuan', 'perihal'];
+        const coreFields = ['nomor_surat', 'tanggal_surat', 'tujuan', 'perihal', 'nik'];
 
         function labelize(value) {
             return value.replace(/_/g, ' ').replace(/\b\w/g, function (letter) { return letter.toUpperCase(); });

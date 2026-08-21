@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class GoogleDriveOAuthTokenStore
 {
@@ -16,8 +17,14 @@ class GoogleDriveOAuthTokenStore
             return null;
         }
 
-        $contents = Storage::disk('local')->get($path);
-        $decoded = json_decode(Crypt::decryptString($contents), true);
+        try {
+            $contents = Storage::disk('local')->get($path);
+            $decoded = json_decode(Crypt::decryptString($contents), true, 512, JSON_THROW_ON_ERROR);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return null;
+        }
 
         return is_array($decoded) ? $decoded : null;
     }

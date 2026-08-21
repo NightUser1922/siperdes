@@ -105,6 +105,18 @@
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
+                                        @if(Auth::check() && Auth::user()->role === 'Kepala Desa' && $surat->status === 'menunggu')
+                                            <form action="{{ url('/surat-keluar/' . $surat->id_surat_keluar . '/approve') }}" method="POST" class="d-inline" onsubmit="return confirm('Setujui surat keluar {{ $surat->nomor_surat }}?');">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-success btn-sm action-btn" title="Setujui"><i class="bi bi-check-lg"></i></button>
+                                            </form>
+                                            <form action="{{ url('/surat-keluar/' . $surat->id_surat_keluar . '/reject') }}" method="POST" class="d-inline" onsubmit="return confirm('Tolak surat keluar {{ $surat->nomor_surat }}?');">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-danger btn-sm action-btn" title="Tolak"><i class="bi bi-x-lg"></i></button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="fw-bold text-success">{{ $surat->nomor_surat }}</td>
@@ -121,13 +133,14 @@
                                 </td>
                                 <td>
                                     @php
-                                        $statusClass = match($surat->status_persetujuan ?? 'Menunggu') {
-                                            'Disetujui' => 'text-bg-success',
-                                            'Ditolak' => 'text-bg-danger',
+                                        $approvalStatus = $surat->status ?? 'menunggu';
+                                        $statusClass = match($approvalStatus) {
+                                            'disetujui' => 'text-bg-success',
+                                            'ditolak' => 'text-bg-danger',
                                             default => 'text-bg-warning',
                                         };
                                     @endphp
-                                    <span class="badge status-badge {{ $statusClass }}">{{ $surat->status_persetujuan ?? 'Menunggu' }}</span>
+                                    <span class="badge status-badge {{ $statusClass }}">{{ ucfirst($approvalStatus) }}</span>
                                 </td>
                                 <td>
                                     @if($surat->file_surat)

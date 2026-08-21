@@ -26,6 +26,9 @@ class SuratKeluar extends Model
         'perihal',
         'file_surat',
         'status_persetujuan',
+        'status',
+        'approved_by',
+        'approved_at',
         'status_dokumen',
         'snapshot_identitas',
         'finalized_at',
@@ -41,6 +44,7 @@ class SuratKeluar extends Model
         'snapshot_identitas' => 'array',
         'finalized_at' => 'datetime',
         'locked_at' => 'datetime',
+        'approved_at' => 'datetime',
         'data_template' => 'array',
     ];
 

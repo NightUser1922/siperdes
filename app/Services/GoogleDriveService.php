@@ -34,6 +34,10 @@ class GoogleDriveService
             throw new RuntimeException('Google Drive OAuth gagal: ' . ($token['error_description'] ?? $token['error']));
         }
 
+        if (empty($token['access_token']) || empty($token['refresh_token'])) {
+            throw new RuntimeException('Google Drive OAuth tidak mengembalikan refresh token. Ulangi koneksi Google Drive dan setujui aksesnya.');
+        }
+
         $this->tokenStore->put($token);
     }
 
@@ -157,6 +161,9 @@ class GoogleDriveService
                 throw new RuntimeException('Refresh token Google Drive gagal: ' . ($newToken['error_description'] ?? $newToken['error']));
             }
 
+            // Google normally omits refresh_token in refresh responses. Keep the
+            // existing value so the next access-token refresh remains possible.
+            $newToken['refresh_token'] = $newToken['refresh_token'] ?? $refreshToken;
             $this->tokenStore->put($newToken);
             $client->setAccessToken($this->tokenStore->get());
         }

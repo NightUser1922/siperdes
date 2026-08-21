@@ -72,6 +72,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/surat-keluar/{id}/preview', [SuratKeluarController::class, 'preview']);
     Route::get('/surat-keluar/{id}/download', [SuratKeluarController::class, 'download']);
     Route::post('/surat-keluar/{id}/generate', [SuratKeluarController::class, 'generate']);
+    Route::patch('/surat-keluar/{id}/approve', [SuratKeluarController::class, 'approve']);
+    Route::patch('/surat-keluar/{id}/reject', [SuratKeluarController::class, 'reject']);
     Route::delete('/surat-keluar/delete/{id}', [SuratKeluarController::class, 'destroy']);
 
     // ==========================================

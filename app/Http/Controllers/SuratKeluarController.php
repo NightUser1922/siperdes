@@ -127,7 +127,8 @@ class SuratKeluarController extends Controller
         $validated = $request->validate($this->rules(false));
         $usesUpload = $request->hasFile('file_surat');
         $template = (!$usesUpload && !empty($validated['id_template'])) ? $this->templateFromRequest($validated['id_template']) : null;
-        $templateData = $template ? $this->templateData($request, $template) : null;
+        $pendudukPenerima = $template ? $this->pendudukFromRequest($request) : null;
+        $templateData = $template ? $this->templateData($request, $template, $pendudukPenerima) : null;
 
         $dataUpdate = [
             'nomor_surat' => $validated['nomor_surat'],
@@ -174,6 +175,15 @@ class SuratKeluarController extends Controller
         return redirect('/surat-keluar')->with('success', 'Data Surat Keluar berhasil dihapus!');
     }
 
+    public function approve(Request $request)
+    {
+        return $this->recordApproval($request, 'disetujui');
+    }
+
+    public function reject(Request $request)
+    {
+        return $this->recordApproval($request, 'ditolak');
+    }
     public function previewTemplate(Request $request)
     {
         $this->authorizeAdmin();
@@ -240,6 +250,33 @@ class SuratKeluarController extends Controller
         return redirect('/surat-keluar')->with('error', 'File surat tidak tersedia.');
     }
 
+    private function recordApproval(Request $request, string $status)
+    {
+        if (!auth()->check() || auth()->user()->role !== 'Kepala Desa') {
+            abort(403);
+        }
+
+        $suratKeluar = SuratKeluar::where('id_surat_keluar', $request->route('id'))->firstOrFail();
+
+        if ($suratKeluar->status !== 'menunggu') {
+            return redirect('/surat-keluar')->with('error', 'Status persetujuan surat ini sudah diproses.');
+        }
+
+        $suratKeluar->update([
+            'status' => $status,
+            'approved_by' => auth()->user()->id_user,
+            'approved_at' => now(),
+        ]);
+
+        AuditLog::catat(
+            $request,
+            $status === 'disetujui' ? 'Setujui Surat Keluar' : 'Tolak Surat Keluar',
+            'Surat Keluar',
+            ucfirst($status) . ' surat keluar ' . $suratKeluar->nomor_surat
+        );
+
+        return redirect('/surat-keluar')->with('success', 'Surat keluar berhasil ' . $status . '.');
+    }
     private function rules(bool $create): array
     {
         $fileRule = $create ? 'nullable|required_without:id_template' : 'nullable';
