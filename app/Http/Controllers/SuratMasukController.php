@@ -116,4 +116,41 @@ class SuratMasukController extends Controller
 
         return redirect('/surat-masuk')->with('success', 'Data Surat Masuk berhasil dihapus!');
     }
+    public function approve(Request $request)
+    {
+        return $this->recordApproval($request, 'disetujui');
+    }
+
+    public function reject(Request $request)
+    {
+        return $this->recordApproval($request, 'ditolak');
+    }
+
+    private function recordApproval(Request $request, string $status)
+    {
+        if (!auth()->check() || auth()->user()->role !== 'Kepala Desa') {
+            abort(403);
+        }
+
+        $suratMasuk = SuratMasuk::where('id_surat_masuk', $request->route('id'))->firstOrFail();
+
+        if ($suratMasuk->status !== 'menunggu') {
+            return redirect('/surat-masuk')->with('error', 'Status persetujuan surat ini sudah diproses.');
+        }
+
+        $suratMasuk->update([
+            'status' => $status,
+            'approved_by' => auth()->user()->id_user,
+            'approved_at' => now(),
+        ]);
+
+        AuditLog::catat(
+            $request,
+            $status === 'disetujui' ? 'Setujui Surat Masuk' : 'Tolak Surat Masuk',
+            'Surat Masuk',
+            ucfirst($status) . ' surat masuk ' . $suratMasuk->nomor_surat
+        );
+
+        return redirect('/surat-masuk')->with('success', 'Surat masuk berhasil ' . $status . '.');
+    }
 }

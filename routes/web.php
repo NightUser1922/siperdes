@@ -36,6 +36,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::post('/surat-masuk/store', [SuratMasukController::class, 'store']);
     Route::get('/surat-masuk/edit/{id}', [SuratMasukController::class, 'edit']);
     Route::put('/surat-masuk/update/{id}', [SuratMasukController::class, 'update']);
+    Route::patch('/surat-masuk/{id}/approve', [SuratMasukController::class, 'approve']);
+    Route::patch('/surat-masuk/{id}/reject', [SuratMasukController::class, 'reject']);
     Route::delete('/surat-masuk/delete/{id}', [SuratMasukController::class, 'destroy']);
 
     // ==========================================

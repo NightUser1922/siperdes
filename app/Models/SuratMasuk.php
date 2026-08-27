@@ -20,6 +20,12 @@ class SuratMasuk extends Model
         'perihal',
         'file_surat',
         'status_verifikasi',
+        'status',
+        'approved_by',
+        'approved_at',
         'id_user'
+    ];
+    protected $casts = [
+        'approved_at' => 'datetime',
     ];
 }
